@@ -11,9 +11,9 @@ import java.util.Random;
  *
  */
 public class QuestionGenerator {
-    static final Map<Question.Type, QuestionFactory> mMap = new HashMap<Question.Type, QuestionFactory>();
+    private Map<Question.Type, QuestionFactory> mMap = new HashMap<Question.Type, QuestionFactory>();
     
-    public static void registerType(Question.Type quesType, QuestionFactory factory) {
+    public void registerType(Question.Type quesType, QuestionFactory factory) {
         mMap.put(quesType, factory);
     }
     
