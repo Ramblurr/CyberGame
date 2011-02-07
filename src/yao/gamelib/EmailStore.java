@@ -58,6 +58,8 @@ public class EmailStore {
         
         //open the inbox
         openFolder("inbox");
+        //open the sent folder
+        openFolder("sent");
     }
     
     /**
@@ -68,6 +70,16 @@ public class EmailStore {
      */
     public Message getNewMessageInbox() {
         return getNewMessage("inbox");
+    }
+    
+    /**
+     * Returns a message that has not yet been seen by the client of this object. 
+     * The state lasts online the lifetime of the object.
+     * The folder used is inbox.
+     * @return an unseen message from the inbox, could be null
+     */
+    public Message getNewMessageSent() {
+        return getNewMessage("sent");
     }
 
     /**

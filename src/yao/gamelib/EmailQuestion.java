@@ -1,7 +1,5 @@
 package yao.gamelib;
 
-import yao.gamelib.Question.Type;
-
 public abstract class EmailQuestion implements Question {
    
     protected String mSender; 
