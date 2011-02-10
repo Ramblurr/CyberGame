@@ -15,7 +15,6 @@ public class Database {
     
     Connection mConn;
     static final int VERSION = 0;
-    public static final String SALT ="Z6BsoDFamnMQFtNHkByJB1Um"; //128 bits
 
     private Database() {
         try {
