@@ -1,0 +1,68 @@
+body
+{
+    line-height: 1.6em;
+    font-family: Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif," "Bitstream Vera Serif", "Liberation Serif", Georgia, serif;
+    text-align: left;
+}
+
+div.spacer {
+    background-color: #8FC73E;
+    height: 1em;
+}
+
+div#footer {
+    font-size: .9em;
+    text-align:center;
+}
+
+div#header h1 {
+    text-align: center;
+}
+
+.login-block {
+    float:left;
+    text-align:center;
+}
+
+.login-block h3 {
+    margin-bottom: 0px;
+}
+
+.login-block form .form-item {
+    overflow: hidden;
+    clear: both;
+    padding: 4px 0px;
+}
+
+.login-block form .form-item label {
+    float: left;
+}
+
+.login-block form .form-item input {
+    float: right;
+}
+
+.login-block form {
+    border-radius:15px 15px 15px 15px;
+   
+    -moz-border-radius:15px 15px 15px 15px;
+    -moz-box-shadow:0 0 10px #333333;
+    -webkit-border-radius:15px 15px 15px 15px;
+   
+    border:3px solid black;
+    padding:20px;
+    
+   -webkit-transition: border-color 300ms ease-out;
+   -moz-transition: border-color 300ms ease-out;
+   -o-transition: border-color 300ms ease-out;
+   transition: border-color 300ms ease-out;
+}
+
+.login-block form:hover {
+   -webkit-transition: border-color 300ms ease-in;
+   -moz-transition: border-color 300ms ease-in;
+   -o-transition: border-color 300ms ease-in;
+   transition: border-color 300ms ease-in;
+
+    border-color:#d09e6d;
+}
