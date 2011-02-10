@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet
+Bundle-SymbolicName: Restlet;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.restlet;bundle-version="2.0.4"
+Import-Package: com.sun.mail.handlers,
+ com.sun.mail.iap,
+ com.sun.mail.imap,
+ com.sun.mail.imap.protocol,
+ com.sun.mail.pop3,
+ com.sun.mail.smtp,
+ com.sun.mail.util,
+ javax.mail
