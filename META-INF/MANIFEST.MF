@@ -4,7 +4,10 @@ Bundle-Name: Restlet
 Bundle-SymbolicName: Restlet;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.restlet;bundle-version="2.0.4"
+Require-Bundle: org.restlet;bundle-version="2.0.4",
+ org.restlet.ext.freemarker;bundle-version="2.0.4",
+ org.freemarker;bundle-version="2.3.0",
+ org.apache.commons.codec;bundle-version="1.4.0"
 Import-Package: com.sun.mail.handlers,
  com.sun.mail.iap,
  com.sun.mail.imap,
