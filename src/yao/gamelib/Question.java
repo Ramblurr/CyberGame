@@ -8,6 +8,7 @@ public interface Question {
     public int getId();
     public String getQuestion();
     public String getAnswer();
+    public String[] getFakeAnswers();
     public Type getType();
     
 }

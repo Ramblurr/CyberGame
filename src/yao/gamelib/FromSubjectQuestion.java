@@ -28,5 +28,4 @@ public class FromSubjectQuestion extends EmailQuestion {
     public Type getType() {
         return Type.FromSubject;
     }
-
 }

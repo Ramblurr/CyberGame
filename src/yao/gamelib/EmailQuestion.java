@@ -4,7 +4,8 @@ public abstract class EmailQuestion implements Question {
    
     protected String mSender; 
     protected String mSubject;
-    protected String mDate; // the answer
+    protected String mDate;
+    protected String[] mFakeAnswers;
     protected int mId;
     
     public EmailQuestion()
@@ -42,5 +43,11 @@ public abstract class EmailQuestion implements Question {
     }
     public void setId(int id) {
         mId = id;
+    }
+    public void setFakeAnswers(String[] answers) {
+        mFakeAnswers = answers;
+    }
+    public String[] getFakeAnswers() {
+        return mFakeAnswers;
     }
 }
