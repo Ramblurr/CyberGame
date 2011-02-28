@@ -1,6 +1,8 @@
 package yao.gamelib;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 
@@ -9,7 +11,8 @@ import javax.mail.MessagingException;
 
 public abstract class EmailQuestionFactory implements QuestionFactory {
     protected EmailStore mStore;
-    
+    final static int     NUM_ANSWERS = 4;
+
     public EmailQuestionFactory(EmailStore store) {
         mStore = store;
     }
@@ -18,16 +21,16 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
     public abstract Question makeQuestion();
 
     /**
-     * Choose a set of fake answers from the array of messages.
+     * Given the message, return a string containing the fake answer This
+     * usually would be whatever field the email question represents: subject,
+     * date, etc.
      * 
      * @param m
-     *            the message we are creating fake answers for
-     * @param msgs
-     *            the messages to choose fake answers from
-     * @return a string array containing the fake answers
+     *            the message to create a fake answer from
+     * @return a string containing the fake answer
      * @throws MessagingException
      */
-    public String[] makeFakeAnswers( Message m, Message[] msgs )
+    protected String makeFakeAnswer( Message m )
             throws MessagingException {
         return null;
     }
@@ -65,15 +68,17 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         // first, generate the range
         // from 1 to max_range_days
         final int max_range_days = 30; // the range will not be greater than 30
+        final int min_range_days = 5; // the range will be at least 5
         Random randGen = new Random();
         int range_days = 0;
         do {
             range_days = randGen.nextInt( max_range_days );
-        } while (range_days == 0); // we don't want 0 as the upper bound
+        } while (range_days <= min_range_days);
 
         System.out.println( "Using date range " + range_days );
         // where in the range will the actual answer fall?
         int date_position = randGen.nextInt( range_days );
+
         System.out.println( "Using date position " + date_position );
         // calculate the range in days
         int days_after_date = range_days - date_position;
@@ -98,10 +103,10 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         // get all messages within the range
         Message[] msgs = mStore.getMessageInRange( "inbox", begin_range,
                 end_range );
-        // we need at least 4 messages in the range that aren't the actual
-        // message so we expand the range by 1 day on each end until
-        // we have at least 5 messages
-        while (msgs.length <= 5) {
+        // we need at least NUM_ANSWERS messages in the range that aren't the
+        // actual message so we expand the range by 1 day on each end until
+        // we have at least NUM_ANSWERS+1 messages
+        while (msgs.length <= NUM_ANSWERS + 1) {
             c.clear();
             c.setTime( begin_range );
             c.add( Calendar.DATE, -1 );
@@ -114,6 +119,33 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             msgs = mStore.getMessageInRange( "inbox", begin_range, end_range );
         }
         return msgs;
+    }
+
+    private String[] makeFakeAnswers( Message m, Message[] msgs )
+            throws MessagingException {
+        // using Random.nextInt() is inappropriate here as we
+        // don't want any repeat numbers. So, create a list of
+        // indexes and shuffle them.
+        ArrayList<Integer> list = new ArrayList<Integer>( msgs.length );
+        for ( int i = 0; i < msgs.length; i++ ) {
+            list.add( i );
+        }
+        Collections.shuffle( list );
+
+        String[] answers = new String[NUM_ANSWERS];
+        // randomly pick messages in the range to be fake answers
+        int found = 0, index = 0;
+        while (found < NUM_ANSWERS) {
+            Message ans_m = msgs[list.get( index )];
+            Date ans_date = ans_m.getSentDate();
+            String ans_text = makeFakeAnswer( ans_m );
+            if ( !ans_date.equals( m.getSentDate() ) ) {
+                System.out.println( "Using index: " + list.get( index ) );
+                answers[found++] = ans_text;
+            }
+            ++index;
+        }
+        return answers;
     }
 
 }

@@ -9,11 +9,17 @@ public class FromSubjectFactory extends EmailQuestionFactory {
         super(store);
     }
 
+    @Override
     public Question makeQuestion() {
         FromSubjectQuestion q = new FromSubjectQuestion();
         
         return setEmailDataInbox(q);
 
+    }
+
+    @Override
+    public String makeFakeAnswer( Message m ) throws MessagingException {
+        return m.getSubject();
     }
 
 }
