@@ -132,20 +132,25 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         }
         Collections.shuffle( list );
 
-        String[] answers = new String[NUM_ANSWERS];
+        ArrayList<String> answers = new ArrayList<String>( NUM_ANSWERS );
         // randomly pick messages in the range to be fake answers
         int found = 0, index = 0;
         while (found < NUM_ANSWERS) {
             Message ans_m = msgs[list.get( index )];
             Date ans_date = ans_m.getSentDate();
             String ans_text = makeFakeAnswer( ans_m );
-            if ( !ans_date.equals( m.getSentDate() ) ) {
+            // check for duplicate answers
+            if ( !ans_date.equals( m.getSentDate() )
+                    && !answers.contains( ans_text ) ) {
                 System.out.println( "Using index: " + list.get( index ) );
-                answers[found++] = ans_text;
+                answers.add( ans_text );
+                ++found;
             }
             ++index;
         }
-        return answers;
+        String[] answersArr = new String[NUM_ANSWERS];
+        answers.toArray( answersArr );
+        return answersArr;
     }
 
 }
