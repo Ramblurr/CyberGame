@@ -1,6 +1,7 @@
 package yao.gamelib;
 
 import java.util.BitSet;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -11,6 +12,10 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
+import javax.mail.search.AndTerm;
+import javax.mail.search.ComparisonTerm;
+import javax.mail.search.SearchTerm;
+import javax.mail.search.SentDateTerm;
 
 /**
  * Encapsulates the email store on disk. Can be used to retrieve messages for processing.
@@ -59,7 +64,7 @@ public class EmailStore {
         //open the inbox
         openFolder("inbox");
         //open the sent folder
-        openFolder("sent");
+        openFolder( "sent" );
     }
     
     /**
@@ -120,6 +125,24 @@ public class EmailStore {
         return null;
     }
     
+    public Message[] getMessageInRange( String folder, Date beginDate,
+            Date endDate ) {
+        if ( !mFolderMap.containsKey( folder ) ) {
+            return null;
+        }
+        FolderInfo info = mFolderMap.get( folder );
+        SearchTerm afterTerm = new SentDateTerm( ComparisonTerm.GE, beginDate );
+        SearchTerm beforeTerm = new SentDateTerm( ComparisonTerm.LE, endDate );
+        SearchTerm andTerm = new AndTerm( afterTerm, beforeTerm );
+        try {
+            return info.folder.search( andTerm );
+        } catch (MessagingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void resetInbox() {
         resetFolder("inbox");
     }
@@ -164,5 +187,5 @@ public class EmailStore {
         FolderInfo info = new FolderInfo(folder);
         mFolderMap.put(folder_name, info);
     }
-    
+
 }

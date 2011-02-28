@@ -20,14 +20,14 @@ public class FetchDatasetTest {
         String pass = "";
         String server = "";
         int port = 993;
-        String basedir = "";
+        String basedir = "C:\\Users\\Casey\\Documents\\workspace\\tmp";
 
         fetcher = new FetchDataset(user, pass, server, port, basedir );        
     }
 
     @Test
     public void testDownloadMail() {
-//        assertTrue( fetcher.DownloadMail() );
+        assertTrue( fetcher.DownloadMail() );
     }
     
     @Test

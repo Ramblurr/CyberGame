@@ -22,15 +22,15 @@ import javax.mail.URLName;
 import com.sun.mail.imap.IMAPSSLStore;
 
 public class FetchDataset {
-    private String mUsername;
-    private String mPassword;
-    private String mServer;
-    private int mPort;
-    private String mBaseDir;
+    private final String mUsername;
+    private final String mPassword;
+    private final String mServer;
+    private final int mPort;
+    private final String mBaseDir;
 
-    private Properties mProperties = new Properties();
-    private Session mSession = Session.getDefaultInstance(mProperties, null);
-    private IMAPSSLStore mImap = new IMAPSSLStore(mSession, null);
+    private final Properties mProperties = new Properties();
+    private final Session mSession = Session.getDefaultInstance(mProperties, null);
+    private final IMAPSSLStore mImap = new IMAPSSLStore(mSession, null);
     private Logger mLogger = null;
     private FileHandler mFh;
 
@@ -185,7 +185,7 @@ public class FetchDataset {
         try {
             mLogger.log( Level.INFO, "Saving messages locally");
             local_inbox.appendMessages(inbox_messages);
-            local_sent.appendMessages(sent_messages);
+            local_sent.appendMessages( sent_messages );
         } catch (MessagingException e) {
             e.printStackTrace();
             mLogger.log( Level.SEVERE, "Could not append local messages");
