@@ -10,7 +10,6 @@ public class StoredQuestion implements Question {
     
     public StoredQuestion(int id, String question, String answer,
             String[] fakeAnswers, Type type) {
-        super();
         this.mId = id;
         this.mQuestion = question;
         this.mAnswer = answer;

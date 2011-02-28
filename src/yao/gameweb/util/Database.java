@@ -136,7 +136,7 @@ public class Database {
             if( rs.next() ) {
                 String question_text = rs.getString("questionText");
                 Question.Type type = Question.Type.valueOf( rs.getString("questionType") );
-                int answer_id = rs.getInt("correctAnswerId");
+                int realAnswer_id = rs.getInt("correctAnswerId");
                 String answer_text = "";
                 
                 prep = mConn.prepareStatement( "SELECT * FROM answers WHERE questionId=?;");
@@ -144,11 +144,15 @@ public class Database {
                 rs = prep.executeQuery();
                 ArrayList<String> list = new ArrayList<String>(4);
                 while( rs.next() ) {
-                    list.add(rs.getString("answerText"));
+                    if( rs.getInt("answerId") == realAnswer_id)
+                        answer_text = rs.getString("answerText");
+                    else
+                        list.add(rs.getString("answerText"));
                 }
                 String[] fakeAnswers = new String[list.size()];
                 list.toArray(fakeAnswers);
                 q = new StoredQuestion(id, question_text, answer_text, fakeAnswers, type);
+                q.setId(id);
             }
         } catch (SQLException e) {    
         }
