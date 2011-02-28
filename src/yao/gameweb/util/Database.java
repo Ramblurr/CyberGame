@@ -11,12 +11,21 @@ import java.util.UUID;
 import yao.gamelib.Question;
 import yao.gamelib.StoredQuestion;
 
+/**
+ * This is a singleton class that encapsulates access to the Database. 
+ * @author Casey
+ *
+ */
 public class Database {
     
     private static class DatabaseHolder  {
         private static final Database INSTANCE = new Database();
     }
     
+    /**
+     * Get the instance of the Database class
+     * @return the database
+     */
     public static Database getInstance() {
         return DatabaseHolder.INSTANCE;
     }
@@ -60,6 +69,11 @@ public class Database {
                 ");");
     }
     
+    /**
+     * Stores a question in the database. The question text, type, and answers will be stored.
+     * @param question the question to store
+     * @return the unique id of the question in the database, which can be used for retrieval
+     */
     public int insertQuestion(Question question) {
         int question_id = -1;
         boolean success = false;
@@ -127,6 +141,11 @@ public class Database {
         return success ? question_id : -1;
     }
     
+    /**
+     * Retrieve a question from the database
+     * @param id the unique id of the question to retrieve
+     * @return a StoredQuestion containing the question, real answer, and fake answers
+     */
     public StoredQuestion retrieveQuestion(int id) {
         StoredQuestion q = null;
         try {
@@ -160,6 +179,11 @@ public class Database {
         return q;
     }
     
+    /**
+     * Create a new user session. Does NOT check if the user has an existing session.
+     * @param user the username of the user
+     * @return a new unique session id
+     */
     public String makeSession(String user) {
         try {
             String sessionid = UUID.randomUUID().toString();  
@@ -176,7 +200,11 @@ public class Database {
         return null;
     }
     
-    
+    /**
+     * Returns the username associated with the supplied session id.
+     * @param sessionid used to look up the user
+     * @return the user name
+     */
     public String getUserForSession(String sessionid)  {
         Statement stat;
         try {
