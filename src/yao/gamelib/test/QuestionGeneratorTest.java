@@ -8,17 +8,14 @@ import org.junit.Test;
 import yao.gamelib.EmailStore;
 import yao.gamelib.FromSubjectFactory;
 import yao.gamelib.FromSubjectQuestion;
+import yao.gamelib.FromWhenFactory;
 import yao.gamelib.FromWhenQuestion;
 import yao.gamelib.FromWhomFactory;
 import yao.gamelib.FromWhomQuestion;
-import yao.gamelib.QuestionGenerator;
 import yao.gamelib.Question;
-import yao.gamelib.FromWhenFactory;
-import yao.gamelib.SentSubjectFactory;
+import yao.gamelib.QuestionGenerator;
 import yao.gamelib.SentSubjectQuestion;
-import yao.gamelib.SentWhenFactory;
 import yao.gamelib.SentWhenQuestion;
-import yao.gamelib.SentWhomFactory;
 import yao.gamelib.SentWhomQuestion;
 
 public class QuestionGeneratorTest {
@@ -29,16 +26,20 @@ public class QuestionGeneratorTest {
         gen = new QuestionGenerator();
 
         String user = "ctlink@binaryelysium.com";
-        String basedir = "C:\\Users\\Casey\\Documents\\workspace\\cybergame\\tmp";
+        String basedir = "C:\\Users\\Casey\\Documents\\workspace\\tmp";
         EmailStore store = new EmailStore(user, basedir);
         
         
         gen.registerType(Question.Type.FromWhen, new FromWhenFactory(store) );
-        gen.registerType(Question.Type.FromWhom, new FromWhomFactory(store) );
-        gen.registerType(Question.Type.FromSubject, new FromSubjectFactory(store) );
-        gen.registerType(Question.Type.SentSubject, new SentSubjectFactory(store) );
-        gen.registerType(Question.Type.SentWhen, new SentWhenFactory(store) );
-        gen.registerType(Question.Type.SentWhom, new SentWhomFactory(store) );
+        gen.registerType( Question.Type.FromWhom, new FromWhomFactory( store ) );
+        gen.registerType( Question.Type.FromSubject, new FromSubjectFactory(
+                store ) );
+        // gen.registerType(Question.Type.SentSubject, new
+        // SentSubjectFactory(store) );
+        // gen.registerType(Question.Type.SentWhen, new SentWhenFactory(store)
+        // );
+        // gen.registerType(Question.Type.SentWhom, new SentWhomFactory(store)
+        // );
     }
     
     @Test
@@ -48,9 +49,13 @@ public class QuestionGeneratorTest {
         
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
+        for ( String fake : fwq.getFakeAnswers() ) {
+            System.out.println( "A:" + fake );
+        }
         Assert.assertNotNull(fwq);
     }
     
+
     @Test
     public void testFromWhomQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.FromWhom);
@@ -58,9 +63,13 @@ public class QuestionGeneratorTest {
         
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
+        for ( String fake : fwq.getFakeAnswers() ) {
+            System.out.println( "A:" + fake );
+        }
         Assert.assertNotNull(fwq);
     }
     
+
     @Test
     public void testFromSubjectQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.FromSubject);
@@ -68,10 +77,14 @@ public class QuestionGeneratorTest {
         
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
+        for ( String fake : fwq.getFakeAnswers() ) {
+            System.out.println( "A:" + fake );
+        }
         Assert.assertNotNull(fwq);
     }
     
-    @Test
+
+    // @Test
     public void testSentWhenQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentWhen);
         SentWhenQuestion fwq = (SentWhenQuestion) q;
@@ -81,7 +94,8 @@ public class QuestionGeneratorTest {
         Assert.assertNotNull(fwq);
     }
     
-    @Test
+
+    // @Test
     public void testSentWhomQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentWhom);
         SentWhomQuestion fwq = (SentWhomQuestion) q;
@@ -91,7 +105,8 @@ public class QuestionGeneratorTest {
         Assert.assertNotNull(fwq);
     }
     
-    @Test
+
+    // @Test
     public void testSentSubjectQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentSubject);
         SentSubjectQuestion fwq = (SentSubjectQuestion) q;
