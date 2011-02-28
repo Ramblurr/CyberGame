@@ -15,4 +15,5 @@ Import-Package: com.sun.mail.handlers,
  com.sun.mail.pop3,
  com.sun.mail.smtp,
  com.sun.mail.util,
- javax.mail
+ javax.mail,
+ javax.mail.search
