@@ -14,8 +14,11 @@ import yao.gamelib.FromWhomFactory;
 import yao.gamelib.FromWhomQuestion;
 import yao.gamelib.Question;
 import yao.gamelib.QuestionGenerator;
+import yao.gamelib.SentSubjectFactory;
 import yao.gamelib.SentSubjectQuestion;
+import yao.gamelib.SentWhenFactory;
 import yao.gamelib.SentWhenQuestion;
+import yao.gamelib.SentWhomFactory;
 import yao.gamelib.SentWhomQuestion;
 
 public class QuestionGeneratorTest {
@@ -34,12 +37,10 @@ public class QuestionGeneratorTest {
         gen.registerType( Question.Type.FromWhom, new FromWhomFactory( store ) );
         gen.registerType( Question.Type.FromSubject, new FromSubjectFactory(
                 store ) );
-        // gen.registerType(Question.Type.SentSubject, new
-        // SentSubjectFactory(store) );
-        // gen.registerType(Question.Type.SentWhen, new SentWhenFactory(store)
-        // );
-        // gen.registerType(Question.Type.SentWhom, new SentWhomFactory(store)
-        // );
+        gen.registerType( Question.Type.SentSubject, new SentSubjectFactory(
+                store ) );
+        gen.registerType( Question.Type.SentWhen, new SentWhenFactory( store ) );
+        gen.registerType( Question.Type.SentWhom, new SentWhomFactory( store ) );
     }
     
     @Test
@@ -84,7 +85,7 @@ public class QuestionGeneratorTest {
     }
     
 
-    // @Test
+    @Test
     public void testSentWhenQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentWhen);
         SentWhenQuestion fwq = (SentWhenQuestion) q;
@@ -95,7 +96,7 @@ public class QuestionGeneratorTest {
     }
     
 
-    // @Test
+    @Test
     public void testSentWhomQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentWhom);
         SentWhomQuestion fwq = (SentWhomQuestion) q;
@@ -106,7 +107,7 @@ public class QuestionGeneratorTest {
     }
     
 
-    // @Test
+    @Test
     public void testSentSubjectQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentSubject);
         SentSubjectQuestion fwq = (SentSubjectQuestion) q;
