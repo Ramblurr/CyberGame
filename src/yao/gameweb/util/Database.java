@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import yao.gamelib.Question;
@@ -59,7 +60,8 @@ public class Database {
                 ");");
     }
     
-    public boolean insertQuestion(Question question) {
+    public int insertQuestion(Question question) {
+        int question_id = -1;
         boolean success = false;
         try {
             mConn.setAutoCommit(false); // this will be one big transaction
@@ -72,7 +74,7 @@ public class Database {
             prep.executeUpdate();
             ResultSet rs = prep.getGeneratedKeys();
             rs.next();
-            int question_id = rs.getInt(1); // save the index of the newly created question
+            question_id = rs.getInt(1); // save the index of the newly created question
             
             // second, insert the correct answer
             prep = mConn.prepareStatement( "INSERT INTO answers values (?, ?, ?, ?);");
@@ -122,33 +124,32 @@ public class Database {
                 e.printStackTrace();
             }
         }
-        return success;
+        return success ? question_id : -1;
     }
     
     public StoredQuestion retrieveQuestion(int id) {
         StoredQuestion q = null;
         try {
-            PreparedStatement prep = mConn.prepareStatement( "SELECT * FROM questions WHERE questionId=?");
+            PreparedStatement prep = mConn.prepareStatement( "SELECT * FROM questions WHERE questionId=?;");
             prep.setInt(1, id);
             ResultSet rs = prep.executeQuery();
-//            if( !rs.next() ) {
-            String question_text = rs.getString("questionText");
-            Question.Type type = Question.Type.valueOf( rs.getString("questionType") );
-            int answer_id = rs.getInt("answerId");
-            String answer_text = "";
-            
-            prep = mConn.prepareStatement( "SELECT * FROM answers WHERE questionId=?");
-            prep.setInt(1, id);
-            rs = prep.executeQuery();
-            String[//get rssize here] fakeAnswers;
-            while( rs.next() ) {
+            if( rs.next() ) {
+                String question_text = rs.getString("questionText");
+                Question.Type type = Question.Type.valueOf( rs.getString("questionType") );
+                int answer_id = rs.getInt("correctAnswerId");
+                String answer_text = "";
                 
+                prep = mConn.prepareStatement( "SELECT * FROM answers WHERE questionId=?;");
+                prep.setInt(1, id);
+                rs = prep.executeQuery();
+                ArrayList<String> list = new ArrayList<String>(4);
+                while( rs.next() ) {
+                    list.add(rs.getString("answerText"));
+                }
+                String[] fakeAnswers = new String[list.size()];
+                list.toArray(fakeAnswers);
+                q = new StoredQuestion(id, question_text, answer_text, fakeAnswers, type);
             }
-            
-            // TODO get answers from answers table
-            
-            q = new StoredQuestion(id, question_text, "", null, type);
-//            }
         } catch (SQLException e) {    
         }
         

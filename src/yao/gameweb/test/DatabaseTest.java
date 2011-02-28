@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import yao.gamelib.FromSubjectFactory;
 import yao.gamelib.FromSubjectQuestion;
+import yao.gamelib.StoredQuestion;
 import yao.gameweb.util.Database;
 
 
@@ -28,7 +29,14 @@ public class DatabaseTest {
         q.setFakeAnswers(answers);
         
         Database db = Database.getInstance();
-        Assert.assertTrue( db.insertQuestion(q) );
+        int question_id = db.insertQuestion(q);
+        Assert.assertTrue( question_id >= 0);
+        
+        StoredQuestion q2 = db.retrieveQuestion(question_id);
+        Assert.assertNotNull(q2);
+        
+        StoredQuestion q3 = db.retrieveQuestion(-1);
+        Assert.assertNull(q3);
     }
 
 }
