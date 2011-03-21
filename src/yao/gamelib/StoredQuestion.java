@@ -1,20 +1,24 @@
 package yao.gamelib;
 
+import yao.gameweb.util.AnswerStub;
+
 public class StoredQuestion implements Question {
     int mId;
     String mQuestion;
     String mAnswer;
-    String[] mFakeAnswers;
+    int mAnswerId;
+    AnswerStub[] mFakeAnswerStubs;
     Question.Type mType;
     StoredQuestion() {}
     
-    public StoredQuestion(int id, String question, String answer,
-            String[] fakeAnswers, Type type) {
+    public StoredQuestion(int id, String question, String answer, int realAnswer_id,
+ AnswerStub[] fakeAnswers, Type type) {
         this.mId = id;
         this.mQuestion = question;
         this.mAnswer = answer;
-        this.mFakeAnswers = fakeAnswers;
+        this.mFakeAnswerStubs = fakeAnswers;
         this.mType = type;
+        this.mAnswerId = realAnswer_id;
     }
 
     @Override
@@ -32,9 +36,21 @@ public class StoredQuestion implements Question {
         return mAnswer;
     }
 
+    public int getAnswerId() {
+        return mAnswerId;
+    }
+
     @Override
     public String[] getFakeAnswers() {
-        return mFakeAnswers;
+        String[] texts = new String[mFakeAnswerStubs.length];
+        for (int i = 0; i < mFakeAnswerStubs.length; i++) {
+            texts[i] = mFakeAnswerStubs[i].text;
+        }
+        return texts;
+    }
+
+    public AnswerStub[] getFakeAnswerStubs() {
+        return mFakeAnswerStubs;
     }
 
     @Override
@@ -52,10 +68,6 @@ public class StoredQuestion implements Question {
 
     public void setAnswer(String answer) {
         this.mAnswer = answer;
-    }
-
-    public void setFakeAnswers(String[] fakeAnswers) {
-        this.mFakeAnswers = fakeAnswers;
     }
 
     public void setType(Question.Type type) {
