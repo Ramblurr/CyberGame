@@ -1,6 +1,9 @@
 package yao.gamelib;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -11,12 +14,17 @@ import java.util.Random;
  *
  */
 public class QuestionGenerator {
-    private Map<Question.Type, QuestionFactory> mMap = new HashMap<Question.Type, QuestionFactory>();
+    private final int NUM_FAKE_ANSWERS = 4;
+    private final Map<Question.Type, QuestionFactory> mMap = new HashMap<Question.Type, QuestionFactory>();
     
     public void registerType(Question.Type quesType, QuestionFactory factory) {
         mMap.put(quesType, factory);
     }
     
+    public int getRegisteredTypesCount() {
+        return mMap.size();
+    }
+
     public QuestionGenerator() {
     }
     
@@ -46,6 +54,42 @@ public class QuestionGenerator {
             return factory.makeQuestion();
         }
         return null;
+    }
+
+    /**
+     * Generates a given number of questions with an even split among all the registered types. Sometimes the requested number of questions cannot be generated, due to there not being enough data, so the size of the returned array might be smaller than the requested size.
+     * 
+     * @param total the total number of questions to generate
+     * @return a shuffled array of questions
+     */
+    public Question[] createQuestionsEven(int total) {
+        if( total <= 0 ) 
+            return null;
+        ArrayList<Question> questions = new ArrayList<Question>();
+
+        int total_types = getRegisteredTypesCount();
+        assert total_types > 0;
+        int questions_per_type = total / total_types;
+        assert questions_per_type > 0;
+
+        Collection<QuestionFactory> values = mMap.values();
+        Iterator<QuestionFactory> it = values.iterator();
+        
+        while (it.hasNext() && questions.size() < total) {
+            QuestionFactory factory = it.next();
+            Question question = null;
+            if( factory != null ){
+                for (int j = 0; j < questions_per_type; ++j) {
+                    question = factory.makeQuestion();
+                    if (question != null && question.getFakeAnswers().length == NUM_FAKE_ANSWERS) {
+                        questions.add(question);
+                    }
+                }
+            }
+        }
+        Question[] q_arr = new Question[questions.size()];
+        q_arr = questions.toArray(q_arr);
+        return q_arr;
     }
 
 }
