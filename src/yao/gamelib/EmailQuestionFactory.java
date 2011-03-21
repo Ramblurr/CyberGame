@@ -73,6 +73,9 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         try {
             Message m = mStore.getNewMessageSent();
 
+            if (m == null)
+                return null;
+
             q = setEmailData(m, q);
             q.setFakeAnswers(cleanAnswers(q, makeFakeAnswers(m, getRandomRange(m, mSent))));
             return q;
