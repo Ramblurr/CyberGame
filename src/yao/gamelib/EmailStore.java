@@ -123,7 +123,8 @@ public class EmailStore {
             info.lastSeen = i;
         }
         if( info.lastSeen > inboxnum ) {
-            return null;
+            resetFolder(folder);
+            return getNewMessage(folder); // TODO possible infinite recursion!
         }
         try {
             Message msg = info.folder.getMessage(info.lastSeen);
