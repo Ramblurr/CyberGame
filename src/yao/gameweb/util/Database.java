@@ -1,10 +1,13 @@
 package yao.gameweb.util;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -65,7 +68,23 @@ public class Database {
         stat.executeUpdate(
                 "CREATE TABLE if not exists sessions ("+
                     "id TEXT, " +
+                    "userId INTEGER," +
+                    "FOREIGN KEY(userId) REFERENCES users(userId)"+
+                ");");
+        stat.executeUpdate(
+                "CREATE TABLE if not exists users ("+
+                    "userId INTEGER PRIMARY KEY," +
                     "username TEXT"+
+                ");");
+        stat.executeUpdate(
+                "CREATE TABLE if not exists responses ("+
+                    "responseId INTEGER PRIMARY KEY," +
+                    "userId INTEGER," +
+                    "questionId INTEGER," +
+                    "answerId INTEGER," +
+                    "FOREIGN KEY(userId) REFERENCES users(userId),"+
+                    "FOREIGN KEY(questionId) REFERENCES questions(questionId),"+
+                    "FOREIGN KEY(answerId) REFERENCES answers(answerId)"+
                 ");");
     }
     
