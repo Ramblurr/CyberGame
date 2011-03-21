@@ -1,9 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Restlet
-Bundle-SymbolicName: Restlet;singleton:=true
+Bundle-Name: CyberGame
+Bundle-SymbolicName: CyberGame;singleton=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.restlet;bundle-version="2.0.4",
  org.restlet.ext.freemarker;bundle-version="2.0.4",
  org.freemarker;bundle-version="2.3.0",
@@ -18,3 +17,4 @@ Import-Package: com.sun.mail.handlers,
  javax.mail,
  javax.mail.internet,
  javax.mail.search
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
