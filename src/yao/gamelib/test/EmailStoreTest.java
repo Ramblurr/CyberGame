@@ -15,7 +15,7 @@ import yao.gamelib.EmailStore;
 
 
 public class EmailStoreTest {
-    String     user    = "";
+    String user = "";
     String     basedir = "C:\\Users\\Casey\\Documents\\workspace\\tmp";
     EmailStore store   = null;
     @Before
