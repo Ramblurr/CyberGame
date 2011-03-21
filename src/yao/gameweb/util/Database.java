@@ -247,6 +247,20 @@ public class Database {
         return user_id;
     }
 
+    public String getUsername(int userId) {
+        String name = null;
+        try {
+            PreparedStatement prep = mConn.prepareStatement("SELECT * FROM users WHERE userId=?;");
+            prep.setInt(1, userId);
+            ResultSet rs = prep.executeQuery();
+            if (rs.next()) {
+                name = rs.getString("username");
+            }
+        } catch (SQLException e) {
+        }
+        return name;
+    }
+
     /**
      * Create a new user session. Does NOT check if the user has an existing session.
      * 
@@ -275,23 +289,23 @@ public class Database {
      * @param sessionid used to look up the user
      * @return the user name
      */
-    public String getUserForSession(String sessionid)  {
+    public int getUserForSession(String sessionid)  {
         Statement stat;
         try {
             stat = mConn.createStatement();
   
-            PreparedStatement prep = mConn.prepareStatement( "select username from sessions where id = ?;");
+            PreparedStatement prep = mConn.prepareStatement( "select userId from sessions where id = ?;");
             prep.setString(1, sessionid);
             ResultSet rs = prep.executeQuery();
             if( rs.next() ) {
-                String user = rs.getString("username");
-                return user;
+                int id = rs.getInt("userId");
+                return id;
             }
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return null;
+        return -1;
     }
     
 }
