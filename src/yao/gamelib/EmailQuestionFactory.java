@@ -198,7 +198,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
      */
     private String[] cleanAnswers(EmailQuestion q, String[] answers) {
         for (int i = 0; i < answers.length; i++) {
-            if (isDuplicate(answers[i], q.getAnswer()))
+            if (answers[i] != null && isDuplicate(answers[i], q.getAnswer()))
                 answers[i] = null; // this null will be removed in the next step
         }
         int num_not_null = 0;
