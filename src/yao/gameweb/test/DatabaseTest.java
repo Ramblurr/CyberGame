@@ -7,7 +7,6 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import yao.gamelib.FromSubjectFactory;
 import yao.gamelib.FromSubjectQuestion;
 import yao.gamelib.StoredQuestion;
 import yao.gameweb.util.Database;
@@ -53,6 +52,23 @@ public class DatabaseTest {
         
         StoredQuestion q3 = db.retrieveQuestion(-1);
         Assert.assertNull(q3);
+    }
+
+    @Test
+    public void createOrGetUser() {
+        Database db = Database.getInstance();
+
+        String username = "dude";
+        int id = db.createOrGetUser(username);
+        Assert.assertTrue(id != -1);
+        int id2 = db.createOrGetUser(username);
+        Assert.assertEquals(id, id2);
+        String username2 = "bro";
+        int id3 = db.createOrGetUser(username2);
+        Assert.assertTrue(id != -1);
+        int id4 = db.createOrGetUser(username2);
+        Assert.assertEquals(id3, id4);
+        Assert.assertTrue(id != id4);
     }
 
 }
