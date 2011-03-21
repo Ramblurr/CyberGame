@@ -1,6 +1,9 @@
 package yao.gamelib.test;
 
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -124,5 +127,18 @@ public class QuestionGeneratorTest {
             System.out.println("A:" + fake);
         }
         Assert.assertNotNull(fwq);
+    }
+
+    @Test
+    public void emailEquality() throws AddressException {
+        InternetAddress e1 = new InternetAddress("dude@dude.com");
+        InternetAddress e2 = new InternetAddress("DUDE@dude.com");
+        InternetAddress e3 = new InternetAddress("dude@DUDE.com");
+        InternetAddress e4 = new InternetAddress("DUDE@DUDE.COM");
+        InternetAddress e5 = new InternetAddress("DudeBro <DUDE@DUDE.COM>");
+        InternetAddress e6 = new InternetAddress("dudebro <dude@dude.com>");
+        InternetAddress e7 = new InternetAddress("dudebro <dudesomeoenelse@dude.com>");
+        Assert.assertTrue(e1.equals(e2) && e1.equals(e3) && e1.equals(e4) && e1.equals(e5) && e1.equals(e6));
+        Assert.assertFalse(e1.equals(e7));
     }
 }

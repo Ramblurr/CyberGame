@@ -2,6 +2,8 @@ package yao.gamelib;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 public class FromWhomFactory extends EmailQuestionFactory {
 
@@ -18,6 +20,18 @@ public class FromWhomFactory extends EmailQuestionFactory {
     @Override
     public String makeFakeAnswer( Message m ) throws MessagingException {
         return m.getFrom()[0].toString();
+    }
+
+    @Override
+    protected boolean isDuplicate(String answer1, String answer2) {
+        try {
+            InternetAddress email1 = new InternetAddress(answer1);
+            InternetAddress email2 = new InternetAddress(answer2);
+            return email1.equals(email2);
+        } catch (AddressException e) {
+            e.printStackTrace();
+        }
+        return answer1.equals(answer2);
     }
 
 }

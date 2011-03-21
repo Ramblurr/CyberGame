@@ -43,12 +43,26 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         return null;
     }
 
+    /**
+     * Given two answers return whether they are duplicates. Default implementation calls .equals() Some email questions might want to override this to perform more robust duplication detect (such as comparing for email addresses).
+     * 
+     * @param answer1
+     *            first answer
+     * @param answer2
+     *            send answer
+     * @return whether the two answers are the same
+     */
+    protected boolean isDuplicate(String answer1, String answer2) {
+        return answer1.equals(answer2);
+    }
+
     protected EmailQuestion setEmailDataInbox(EmailQuestion q) {
         try {
             Message m = mStore.getNewMessageInbox();
 
-            q.setFakeAnswers(makeFakeAnswers(m, getRandomRange(m, mInbox)));
-            return setEmailData(m, q);
+            q = setEmailData(m, q);
+            q.setFakeAnswers(cleanAnswers(q, makeFakeAnswers(m, getRandomRange(m, mInbox))));
+            return q;
         } catch (MessagingException e) {
             e.printStackTrace();
             return null;
@@ -59,8 +73,9 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         try {
             Message m = mStore.getNewMessageSent();
 
-            q.setFakeAnswers(makeFakeAnswers(m, getRandomRange(m, mSent)));
-            return setEmailData(m, q);
+            q = setEmailData(m, q);
+            q.setFakeAnswers(cleanAnswers(q, makeFakeAnswers(m, getRandomRange(m, mSent))));
+            return q;
 
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -150,13 +165,16 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         ArrayList<String> answers = new ArrayList<String>( NUM_ANSWERS );
         // randomly pick messages in the range to be fake answers
         int found = 0, index = 0;
-        while (found < NUM_ANSWERS) {
+        while (found < NUM_ANSWERS && index < list.size()) {
             Message ans_m = msgs[list.get( index )];
             Date ans_date = ans_m.getSentDate();
-            String ans_text = makeFakeAnswer( ans_m );
+            String ans_text = makeFakeAnswer(ans_m).trim();
             // check for duplicate answers
-            if ( !ans_date.equals( m.getSentDate() )
-                    && !answers.contains( ans_text ) ) {
+            boolean duplicate = false;
+            for (String a : answers) {
+                duplicate = isDuplicate(a, ans_text);
+            }
+            if (!duplicate) {
                 //                System.out.println( "Using index: " + list.get( index ) );
                 answers.add( ans_text );
                 ++found;
@@ -166,6 +184,32 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         String[] answersArr = new String[NUM_ANSWERS];
         answers.toArray( answersArr );
         return answersArr;
+    }
+
+    /**
+     * Removes null fake answers (when an answer couldnt be found) And removes fake answers that are duplicates of the actual answer.
+     * 
+     * @param q
+     * @param answers
+     * @return
+     */
+    private String[] cleanAnswers(EmailQuestion q, String[] answers) {
+        for (int i = 0; i < answers.length; i++) {
+            if (isDuplicate(answers[i], q.getAnswer()))
+                answers[i] = null; // this null will be removed in the next step
+        }
+        int num_not_null = 0;
+        for (int i = 0; i < answers.length; i++) {
+            if (answers[i] != null)
+                ++num_not_null;
+        }
+        String[] null_removed = new String[num_not_null];
+        int added = 0;
+        for (int i = 0; i < answers.length; i++) {
+            if (answers[i] != null)
+                null_removed[added++] = answers[i];
+        }
+        return null_removed;
     }
 
 }
