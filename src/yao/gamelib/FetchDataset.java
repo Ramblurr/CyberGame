@@ -28,6 +28,7 @@ public class FetchDataset {
     private final int mPort;
     private final String mBaseDir;
     private final String[] mFolders;
+    private final int mMsgMax;
 
     private final Properties mProperties = new Properties();
     private final Session mSession = Session.getDefaultInstance(mProperties, null);
@@ -50,15 +51,18 @@ public class FetchDataset {
      *            the absolute path to a base directory to store logs and mail
      * @param folders
      *            an array of foldernames to download, if null will default to inbox and sent folder
+     * @param maximum
+     *            the maximum number of messages to download from each folder
      */
     public FetchDataset(String username, String password, String server,
- int port, String basedir, String[] folders) {
+ int port, String basedir, String[] folders, int maximum) {
         this.mUsername = username;
         this.mPassword = password;
         this.mServer = server;
         this.mPort = port;
         this.mBaseDir = basedir;
         this.mFolders = folders;
+        this.mMsgMax = maximum;
 
         mLogger = Logger.getLogger(mUsername );
         try {
@@ -230,11 +234,11 @@ public class FetchDataset {
             if (mFolders != null) {
                 for (int i = 0; i < mFolders.length; ++i) {
                     mLogger.log(Level.FINE, "\tsaving messages for " + mFolders[i]);
-                    local_folders[i].appendMessages(messages[i]);
+                    local_folders[i].appendMessages(TrimMessages(messages[i]));
                 }
             } else {
-                local_inbox.appendMessages(inbox_messages);
-                local_sent.appendMessages(sent_messages);
+                local_inbox.appendMessages(TrimMessages(inbox_messages));
+                local_sent.appendMessages(TrimMessages(sent_messages));
             }
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -245,6 +249,19 @@ public class FetchDataset {
         return true;
     }
     
+    private Message[] TrimMessages(Message[] msgs) {
+        if (mMsgMax <= 0 || msgs.length <= mMsgMax) {
+            return msgs;
+        }
+
+        Message[] smaller = new Message[mMsgMax];
+        // We want to traverse backwards, because newer messages are at the end
+        for (int i = msgs.length - 1, j = 0; j < smaller.length && i > 0; --i, ++j) {
+            smaller[j] = msgs[i];
+        }
+        return smaller;
+    }
+
     private Message[] CleanMessages(Message[] msgs) {
         ArrayList<Message> cleaned = new ArrayList<Message>();
         for( Message msg : msgs ) {
