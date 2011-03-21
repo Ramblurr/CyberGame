@@ -28,7 +28,6 @@ public class SetupQuestions {
      * @param args
      */
     public static void main(String[] args) {
-        printUsage();
         String arg;
         int i = 0;
         boolean verbose = false, fetch_only = false, generate_only = false;
