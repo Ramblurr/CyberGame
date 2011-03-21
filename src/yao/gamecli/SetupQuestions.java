@@ -92,12 +92,12 @@ public class SetupQuestions {
             folders[0] = "inbox";
             folders[1] = "sent";
         }
+        assert folders.length == 2; // temporary requirement, the generator code assumes there are only 2 folders
         generate(verbose, username, basepath, folders);
     }
 
     public static void generate(boolean verbose, String user, String base, String[] f) {
         EmailStore store = null;
-        String[] folders_normalized = new String[f.length]; //  
         try {
             store = new EmailStore(user, base, f);
         } catch (Exception e) {
@@ -148,6 +148,9 @@ public class SetupQuestions {
         Database db = Database.getInstance();
         for (Question q : questions) {
             int question_id = db.insertQuestion(q);
+            if( verbose ) {
+                System.out.println("Inserted question with id " + question_id);
+            }
         }
     }
     public static void fetch(boolean verbose) {
@@ -192,6 +195,8 @@ public class SetupQuestions {
         }
         if (verbose)
             System.out.println("Saving data to " + basepath);
+        int max_msgs = readInt("Maximum number of messages to fetch from each folder (0 for all): ");
+
         System.out.println("Which folders do you want to retrieve? The default is inbox and sent mail.");
         String folders_raw = readString("Folders to retrieve (comma separated) [inbox, sent]: ").trim();
         folders = null;
@@ -211,9 +216,14 @@ public class SetupQuestions {
                 System.out.println("Using folders: 'inbox' 'sent'");
         }
         System.out.println("Starting fetch proccess. Logging status to file: " + basepath + "/" + username + ".log");
-        FetchDataset fetcher = new FetchDataset(username, password, server, port, basepath, folders);
+        FetchDataset fetcher = new FetchDataset(username, password, server, port, basepath, folders, max_msgs);
         fetcher.DownloadMail();
         System.out.println("Fetching Complete. Check status log: " + basepath + "/" + username + ".log");
+        if (folders == null) {
+            folders = new String[2];
+            folders[0] = "inbox";
+            folders[1] = "sent";
+        }
     }
 
     public static void printUsage() {
