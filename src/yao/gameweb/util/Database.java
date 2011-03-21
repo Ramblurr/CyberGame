@@ -249,15 +249,17 @@ public class Database {
 
     /**
      * Create a new user session. Does NOT check if the user has an existing session.
+     * 
      * @param user the username of the user
      * @return a new unique session id
      */
     public String makeSession(String user) {
         try {
+            int user_id = createOrGetUser(user.toLowerCase().trim());
             String sessionid = UUID.randomUUID().toString();  
             PreparedStatement prep = mConn.prepareStatement( "insert into sessions values (?, ?);");
             prep.setString(1, sessionid);
-            prep.setString(2, user);
+            prep.setInt(2, user_id);
             prep.addBatch();
             prep.executeBatch();
             return sessionid;
