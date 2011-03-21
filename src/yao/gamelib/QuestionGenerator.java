@@ -79,11 +79,16 @@ public class QuestionGenerator {
             QuestionFactory factory = it.next();
             Question question = null;
             if( factory != null ){
-                for (int j = 0; j < questions_per_type; ++j) {
+                int iteration_limit = 100;
+                int curr_iteration = 0;
+                int num_curr_type = 0;
+                while (curr_iteration < iteration_limit && num_curr_type <= questions_per_type) {
                     question = factory.makeQuestion();
                     if (question != null && question.getFakeAnswers().length == NUM_FAKE_ANSWERS) {
                         questions.add(question);
+                        ++num_curr_type;
                     }
+                    ++curr_iteration;
                 }
             }
         }
