@@ -38,7 +38,7 @@ public class FetchDataset {
 
     /**
      * Class encapsulates connection to the email server and provides methods to download email as a dataset It connects to the server using IMAP.
-     * 
+     *
      * @param username
      *            username of email account
      * @param password
@@ -111,7 +111,7 @@ public class FetchDataset {
     private Folder GetInbox() throws MessagingException {
         return GetFolder("inbox");
     }
-    
+
     public Folder GetSentFolder() throws MessagingException {
         Folder DF;
         Folder sent = null;
@@ -119,7 +119,7 @@ public class FetchDataset {
         mLogger.log( Level.INFO, "Searching for sent folder");
         DF = mImap.getDefaultFolder();
         list = DF.list();
-        
+
         list = DF.list("*sent*");
         if( list.length == 0 ) {
             list = DF.list("*Sent*");
@@ -141,7 +141,7 @@ public class FetchDataset {
         Store store = mSession.getStore(new URLName(maildir_url));
         return store;
     }
-    
+
     public static String MailDirDir(String baseurl, String username) {
         return "maildir:" + baseurl + "/" + username +"/Maildir";
     }
@@ -248,9 +248,11 @@ public class FetchDataset {
         mLogger.log( Level.INFO, "Download operation complete.");
         return true;
     }
-    
+
     private Message[] TrimMessages(Message[] msgs) {
+//        System.out.println("Trim: Before " + msgs.length);
         if (mMsgMax <= 0 || msgs.length <= mMsgMax) {
+//            System.out.println("Trim: no need to trim, aborting");
             return msgs;
         }
 
@@ -259,6 +261,7 @@ public class FetchDataset {
         for (int i = msgs.length - 1, j = 0; j < smaller.length && i > 0; --i, ++j) {
             smaller[j] = msgs[i];
         }
+//        System.out.println("Trim: after " + smaller.length);
         return smaller;
     }
 
@@ -268,7 +271,7 @@ public class FetchDataset {
             try {
                 Flags flags =  msg.getFlags();
                 if( flags.contains(Flags.Flag.SEEN) ) {
-                    
+
                     cleaned.add(msg);
                 }
             } catch (MessagingException e){
@@ -279,7 +282,7 @@ public class FetchDataset {
         Message[] cleaned_msgs = new Message[cleaned.size()];
         return cleaned.toArray(cleaned_msgs);
     }
-    
+
     public void ListFolders() {
         Folder DF;
         Folder[] list;

@@ -60,7 +60,7 @@ public class SetupQuestions {
         }
         fetch(verbose);
         generate(verbose, username, basepath, folders);
-        
+
 
     }
 
@@ -90,9 +90,9 @@ public class SetupQuestions {
                 System.out.println("Using folders: 'inbox' 'sent'");
             folders = new String[2];
             folders[0] = "inbox";
-            folders[1] = "sent";
+            folders[1] = "SENT";
         }
-        assert folders.length == 2; // temporary requirement, the generator code assumes there are only 2 folders
+//        assert folders.length == 2; // temporary requirement, the generator code assumes there are only 2 folders
         generate(verbose, username, basepath, folders);
     }
 
@@ -102,12 +102,17 @@ public class SetupQuestions {
             store = new EmailStore(user, base, f);
         } catch (Exception e) {
             System.err.println("Could not open local dataset. Is the basepath, user, and folder list correct?");
+            System.err.println(base + " " + user);
+            for (String folder : f ) {
+                System.err.println("\t "+folder);
+            }
+
             System.exit(1);
         }
-        
+
         System.out.println("To generate questions I need to know which folders contains ");
         System.out.println("mail you *received* and mail you *sent*.");
-        String inbox = "inbox", sent = "sent";
+        String inbox = "inbox", sent = "SENT";
         for (int i = 0; i < f.length; i++) {
             boolean received = readBool("Does '" + f[i] + "' contain mail you recevied [y/n]? ");
             if (received)
@@ -127,7 +132,7 @@ public class SetupQuestions {
             gen.registerType(Question.Type.SentSubject, new SentSubjectFactory(store, sent, inbox));
             gen.registerType(Question.Type.SentWhen, new SentWhenFactory(store, sent, inbox));
             gen.registerType(Question.Type.SentWhom, new SentWhomFactory(store, sent, inbox));
-    
+
             questions = gen.createQuestionsEven(num);
             System.out.println("made " + questions.length + " questions");
             for (Question q : questions) {
@@ -222,7 +227,7 @@ public class SetupQuestions {
         if (folders == null) {
             folders = new String[2];
             folders[0] = "inbox";
-            folders[1] = "sent";
+            folders[1] = "SENT";
         }
     }
 

@@ -28,12 +28,12 @@ public class EmailStore {
     String mMailDirLoc;
     String[] mFolders;
     Store mStore;
-    
+
     private class FolderInfo {
         public FolderInfo(Folder f) throws MessagingException {
             folder = f;
             seenMarks = new BitSet(f.getMessageCount());
-            
+
             reset();
         }
         public void reset() {
@@ -44,12 +44,12 @@ public class EmailStore {
         public int lastSeen;
         public BitSet seenMarks;
     }
-    
+
     static final Map<String, FolderInfo> mFolderMap = new HashMap<String, FolderInfo>();
 
     /**
      * Loads the EmailStore for the specified user at the given base directory.
-     * 
+     *
      * @param username
      * @param basedir
      * @param folders
@@ -61,25 +61,25 @@ public class EmailStore {
         mBaseDir = basedir;
         mMailDirLoc = FetchDataset.MailDirDir(basedir, username);
         mFolders = folders;
-        
+
         Session session = Session.getInstance(new Properties());
         mStore = session.getStore(new URLName(mMailDirLoc));
         mStore.connect(); //useless with Maildir but included here for consistency
-        
+
         if (folders == null) {
             //open the inbox
             openFolder("inbox");
             //open the sent folder
-            openFolder("sent");
+            openFolder("SENT");
         } else {
             for (int i = 0; i < folders.length; i++) {
                 openFolder(folders[i]);
             }
         }
     }
-    
+
     /**
-     * Returns a message that has not yet been seen by the client of this object. 
+     * Returns a message that has not yet been seen by the client of this object.
      * The state lasts online the lifetime of the object.
      * The folder used is inbox.
      * @return an unseen message from the inbox, could be null
@@ -87,19 +87,19 @@ public class EmailStore {
     public Message getNewMessageInbox() {
         return getNewMessage("inbox");
     }
-    
+
     /**
-     * Returns a message that has not yet been seen by the client of this object. 
+     * Returns a message that has not yet been seen by the client of this object.
      * The state lasts online the lifetime of the object.
      * The folder used is inbox.
      * @return an unseen message from the inbox, could be null
      */
     public Message getNewMessageSent() {
-        return getNewMessage("sent");
+        return getNewMessage("SENT");
     }
 
     /**
-     * Returns a message that has not yet been seen by the client of this object. 
+     * Returns a message that has not yet been seen by the client of this object.
      * The state lasts online the lifetime of the object.
      * @param folder the folder to retrieve a message from.
      * @return an unseen message, could be null
@@ -136,7 +136,7 @@ public class EmailStore {
         }
         return null;
     }
-    
+
     public Message[] getMessageInRange( String folder, Date beginDate,
             Date endDate ) {
         if ( !mFolderMap.containsKey( folder ) ) {
@@ -158,7 +158,7 @@ public class EmailStore {
     public void resetInbox() {
         resetFolder("inbox");
     }
-    /** 
+    /**
      * Resets the internal state
      * @param folder
      */
@@ -183,11 +183,11 @@ public class EmailStore {
         }
         return -1;
     }
-    
+
     public String getUsername() {
         return mUsername;
     }
-    
+
     /**
      * Opens the folder for reading with this class. By default the inbox is opened on class instantiation.
      * @param folder_name
