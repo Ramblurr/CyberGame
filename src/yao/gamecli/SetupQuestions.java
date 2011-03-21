@@ -17,6 +17,7 @@ import yao.gamelib.QuestionGenerator;
 import yao.gamelib.SentSubjectFactory;
 import yao.gamelib.SentWhenFactory;
 import yao.gamelib.SentWhomFactory;
+import yao.gameweb.util.Database;
 
 public class SetupQuestions {
 
@@ -66,7 +67,7 @@ public class SetupQuestions {
     public static void generate(boolean verbose) {
         username = readString("Username: ").trim();
         String curr_dir = System.getProperty("user.dir");
-        basepath = readString("Path to save dataset [" + curr_dir + "]: ").trim();
+        basepath = readString("Dataset path [" + curr_dir + "]: ").trim();
         if (basepath.length() == 0) {
             basepath = curr_dir;
         }
@@ -87,6 +88,9 @@ public class SetupQuestions {
         } else {
             if (verbose)
                 System.out.println("Using folders: 'inbox' 'sent'");
+            folders = new String[2];
+            folders[0] = "inbox";
+            folders[1] = "sent";
         }
         generate(verbose, username, basepath, folders);
     }
@@ -105,21 +109,46 @@ public class SetupQuestions {
         System.out.println("mail you *received* and mail you *sent*.");
         String inbox = "inbox", sent = "sent";
         for (int i = 0; i < f.length; i++) {
-            boolean received = readBool("Does " + f[i] + " contain mail you recevied [y/n]? ");
+            boolean received = readBool("Does '" + f[i] + "' contain mail you recevied [y/n]? ");
             if (received)
                 inbox = f[i];
             else
                 sent = f[i];
         }
 
-        QuestionGenerator gen = new QuestionGenerator();
-        gen.registerType(Question.Type.FromWhen, new FromWhenFactory(store, sent, inbox));
-        gen.registerType(Question.Type.FromWhom, new FromWhomFactory(store, sent, inbox));
-        gen.registerType(Question.Type.FromSubject, new FromSubjectFactory(store, sent, inbox));
-        gen.registerType(Question.Type.SentSubject, new SentSubjectFactory(store, sent, inbox));
-        gen.registerType(Question.Type.SentWhen, new SentWhenFactory(store, sent, inbox));
-        gen.registerType(Question.Type.SentWhom, new SentWhomFactory(store, sent, inbox));
+        int num = readInt("Number of questions to generate: ");
+        boolean cont = false;
+        Question[] questions = null;
+        do {
+            QuestionGenerator gen = new QuestionGenerator();
+            gen.registerType(Question.Type.FromWhen, new FromWhenFactory(store, sent, inbox));
+            gen.registerType(Question.Type.FromWhom, new FromWhomFactory(store, sent, inbox));
+            gen.registerType(Question.Type.FromSubject, new FromSubjectFactory(store, sent, inbox));
+            gen.registerType(Question.Type.SentSubject, new SentSubjectFactory(store, sent, inbox));
+            gen.registerType(Question.Type.SentWhen, new SentWhenFactory(store, sent, inbox));
+            gen.registerType(Question.Type.SentWhom, new SentWhomFactory(store, sent, inbox));
+    
+            questions = gen.createQuestionsEven(num);
+            System.out.println("made " + questions.length + " questions");
+            for (Question q : questions) {
+                if( q == null ) {
+                    System.out.println("WTF NULL!");
+                    continue;
+                }
+                System.out.println(q.getType());
+                System.out.println("\tQ:" + q.getQuestion());
+                System.out.println("\tA(real):" + q.getAnswer());
+                for (String fake : q.getFakeAnswers()) {
+                    System.out.println("\tA:" + fake);
+                }
+            }
+            cont = readBool("Re-generate  [y/n]? ");
+        } while (cont);
 
+        Database db = Database.getInstance();
+        for (Question q : questions) {
+            int question_id = db.insertQuestion(q);
+        }
     }
     public static void fetch(boolean verbose) {
         // first read user credentials
