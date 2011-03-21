@@ -197,7 +197,56 @@ public class Database {
         
         return q;
     }
-    
+
+    /**
+     * Stores a user's response to a question.
+     * 
+     * @param user_id
+     * @param question_id
+     * @param answer_id
+     */
+    public boolean storeResponse(int user_id, int question_id, int answer_id) {
+        try {
+            PreparedStatement prep = mConn.prepareStatement( "INSERT INTO responses values (?, ?, ?, ?);");
+            prep.setNull(1, java.sql.Types.INTEGER); // reponse id
+            prep.setInt(2, user_id);
+            prep.setInt(3, question_id);
+            prep.setInt(4, answer_id);
+            prep.executeUpdate();
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Adds the username to the database, if it does not exist, otherwise 
+     * fetches the user from the database.
+     * @param username
+     * @return the user id
+     */
+    public int createOrGetUser(String username) {
+        int user_id = -1;
+        try {
+            PreparedStatement prep = mConn.prepareStatement("SELECT * FROM users WHERE username=?;");
+            prep.setString(1, username);
+            ResultSet rs = prep.executeQuery();
+            if (rs.next()) {
+                user_id = rs.getInt("userId");
+            } else {
+                prep = mConn.prepareStatement("INSERT INTO users values (?, ?);");
+                prep.setNull(1, java.sql.Types.INTEGER); // user id
+                prep.setString(2, username);
+                prep.executeUpdate();
+                rs = prep.getGeneratedKeys();
+                rs.next();
+                user_id = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+        }
+        return user_id;
+    }
+
     /**
      * Create a new user session. Does NOT check if the user has an existing session.
      * @param user the username of the user
