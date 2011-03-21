@@ -172,29 +172,68 @@ public class Database {
             prep.setInt(1, id);
             ResultSet rs = prep.executeQuery();
             if( rs.next() ) {
-                String question_text = rs.getString("questionText");
-                Question.Type type = Question.Type.valueOf( rs.getString("questionType") );
-                int realAnswer_id = rs.getInt("correctAnswerId");
-                String answer_text = "";
-                
-                prep = mConn.prepareStatement( "SELECT * FROM answers WHERE questionId=?;");
-                prep.setInt(1, id);
-                rs = prep.executeQuery();
-                ArrayList<String> list = new ArrayList<String>(4);
-                while( rs.next() ) {
-                    if( rs.getInt("answerId") == realAnswer_id)
-                        answer_text = rs.getString("answerText");
-                    else
-                        list.add(rs.getString("answerText"));
-                }
-                String[] fakeAnswers = new String[list.size()];
-                list.toArray(fakeAnswers);
-                q = new StoredQuestion(id, question_text, answer_text, fakeAnswers, type);
-                q.setId(id);
+                q = populateQuestion(rs);
             }
         } catch (SQLException e) {    
         }
         
+        return q;
+    }
+
+    /**
+     * Get some stored questions
+     * 
+     * @param number
+     * @return an array of questions
+     */
+    public StoredQuestion[] getQuestions(int number) {
+        ArrayList<StoredQuestion> questions  = new ArrayList<StoredQuestion>();
+
+        try {
+            PreparedStatement prep = mConn.prepareStatement("SELECT * FROM questions LIMIT ?");
+            prep.setInt(1, number);
+            ResultSet rs = prep.executeQuery();
+            while(rs.next()) {
+                try {
+                    StoredQuestion q = populateQuestion(rs);
+                    if (q != null)
+                        questions.add(q);
+                } catch (SQLException e) {
+                }
+            }
+        } catch (SQLException e) {
+        }
+
+        StoredQuestion[] q_arr= questions.toArray(new StoredQuestion[questions.size()]);
+        return q_arr;
+    }
+
+    private StoredQuestion populateQuestion(ResultSet rs) throws SQLException {
+        StoredQuestion q = null;
+        int id = rs.getInt("questionId");
+        String question_text = rs.getString("questionText");
+        Question.Type type = Question.Type.valueOf(rs.getString("questionType"));
+        int realAnswer_id = rs.getInt("correctAnswerId");
+        String answer_text = "";
+
+        PreparedStatement prep = mConn.prepareStatement("SELECT * FROM answers WHERE questionId=?;");
+        prep.setInt(1, id);
+        rs = prep.executeQuery();
+        ArrayList<AnswerStub> list = new ArrayList<AnswerStub>(4);
+        while (rs.next()) {
+            if (rs.getInt("answerId") == realAnswer_id)
+                answer_text = rs.getString("answerText");
+            else {
+                AnswerStub stub = new AnswerStub();
+                stub.text = rs.getString("answerText");
+                stub.id = rs.getInt("answerId");
+                list.add(stub);
+            }
+        }
+        AnswerStub[] fakeAnswers = new AnswerStub[list.size()];
+        list.toArray(fakeAnswers);
+        q = new StoredQuestion(id, question_text, answer_text, realAnswer_id, fakeAnswers, type);
+        q.setId(id);
         return q;
     }
 
