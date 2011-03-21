@@ -30,7 +30,7 @@ public class QuestionGeneratorTest {
 
         String user = "farhorizons@binaryelysium.com";
         String basedir = "C:\\Users\\Casey\\Documents\\workspace\\tmp";
-        String[] folders = {"inbox"};
+        String[] folders = { "inbox", "sent" };
         EmailStore store = new EmailStore(user, basedir, folders);
         
         String inbox = "inbox";
@@ -92,6 +92,9 @@ public class QuestionGeneratorTest {
         
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
+        for (String fake : fwq.getFakeAnswers()) {
+            System.out.println("A:" + fake);
+        }
         Assert.assertNotNull(fwq);
     }
     
@@ -103,6 +106,9 @@ public class QuestionGeneratorTest {
         
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
+        for (String fake : fwq.getFakeAnswers()) {
+            System.out.println("A:" + fake);
+        }
         Assert.assertNotNull(fwq);
     }
     
@@ -114,7 +120,9 @@ public class QuestionGeneratorTest {
         
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
+        for (String fake : fwq.getFakeAnswers()) {
+            System.out.println("A:" + fake);
+        }
         Assert.assertNotNull(fwq);
     }
-
 }

@@ -47,7 +47,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         try {
             Message m = mStore.getNewMessageInbox();
 
-            q.setFakeAnswers( makeFakeAnswers( m, getRandomRange( m ) ) );
+            q.setFakeAnswers(makeFakeAnswers(m, getRandomRange(m, mInbox)));
             return setEmailData(m, q);
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -56,9 +56,16 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
     }
     
     protected EmailQuestion setEmailDataSent(EmailQuestion q) {
-        Message m = mStore.getNewMessageSent();
-        
-        return setEmailData(m, q);
+        try {
+            Message m = mStore.getNewMessageSent();
+
+            q.setFakeAnswers(makeFakeAnswers(m, getRandomRange(m, mSent)));
+            return setEmailData(m, q);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     private EmailQuestion setEmailData( Message m, EmailQuestion q ) {
@@ -72,7 +79,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         return q; 
     }
 
-    private Message[] getRandomRange( Message m ) throws MessagingException {
+    private Message[] getRandomRange(Message m, String folder) throws MessagingException {
         // first, generate the range
         // from 1 to max_range_days
         final int max_range_days = 30; // the range will not be greater than 30
@@ -109,7 +116,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         //                + " to " + end_range.toString() );
 
         // get all messages within the range
-        Message[] msgs = mStore.getMessageInRange(mInbox, begin_range,
+        Message[] msgs = mStore.getMessageInRange(folder, begin_range,
                 end_range );
         // we need at least NUM_ANSWERS messages in the range that aren't the
         // actual message so we expand the range by 1 day on each end until
@@ -124,7 +131,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             c.setTime( end_range );
             c.add( Calendar.DATE, 1 );
             end_range = c.getTime();
-            msgs = mStore.getMessageInRange(mInbox, begin_range, end_range);
+            msgs = mStore.getMessageInRange(folder, begin_range, end_range);
         }
         return msgs;
     }
