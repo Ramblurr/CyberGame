@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
@@ -18,7 +18,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
-import org.restlet.data.Method;
 
 import yao.gameweb.util.Database;
 import yao.gameweb.util.TemplateUtil;
@@ -32,24 +31,29 @@ public class LoginResource  extends ServerResource {
         allowedMethods.add(Method.GET);
         setAllowedMethods(allowedMethods);
     }
+    @Override
     @Get  
     public Representation  get() {
         try {
             Map<String, Object> pageData = new HashMap<String, Object>();
-        
-            
             String sessionToken = this.getRequest().getCookies().getFirstValue(GameApplication.SESSIONKEY);
             
-            if (sessionToken == null) {
+            boolean valid = false;
+            if (sessionToken != null) {
+                int userId = Database.getInstance().getUserForSession(sessionToken);
+                if (userId > 0)
+                    valid = true;
+            }
+            
+            if (!valid) {
                 // user is not authenticated
                 Template thtml = TemplateUtil.getInstance().getTemplate("index-html.ftl");
                 TemplateRepresentation rep = new TemplateRepresentation(thtml, pageData, MediaType.TEXT_HTML);
                 rep.setCharacterSet(CharacterSet.UTF_8);
                 return rep;
             } else {
-                String user = Database.getInstance().getUserForSession(sessionToken);
-                return new StringRepresentation("Your user name is: "+user+" and your token is "+sessionToken);
-
+                //redirect to quiz
+                getResponse().redirectSeeOther("/quiz");
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -67,11 +71,12 @@ public class LoginResource  extends ServerResource {
 
         String existing_sessionToken = this.getRequest().getCookies().getFirstValue(GameApplication.SESSIONKEY);
         if( existing_sessionToken != null) {
-            String stored_user = Database.getInstance().getUserForSession(existing_sessionToken);
-            if( stored_user.equals(username)) {
+            int user_id = Database.getInstance().getUserForSession(existing_sessionToken);
+            String stored_user = Database.getInstance().getUsername(user_id);
+            if (username.equals(stored_user)) {
                 // user is relogging in
                 setStatus(Status.SUCCESS_CREATED);
-                getResponse().redirectSeeOther("/");
+                getResponse().redirectSeeOther("/quiz");
                 getResponse().setEntity("already logged in", MediaType.TEXT_PLAIN);
                 return;
             } // else the user is logging in as someone else
@@ -91,7 +96,7 @@ public class LoginResource  extends ServerResource {
                 MediaType.TEXT_PLAIN);
         }
         result = rep;
-        getResponse().setEntity(rep);
+        getResponse().redirectSeeOther("/quiz");
     }
     
     
