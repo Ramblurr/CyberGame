@@ -1,7 +1,5 @@
 package yao.gameweb;
 
-import javax.naming.Context;
-
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.resource.Directory;
@@ -15,11 +13,13 @@ public class GameApplication extends Application {
     public GameApplication() {
 //        super(context);
    }
+    @Override
     public Restlet createInboundRoot() {
         Router router = new Router(this.getContext());
         
         // handles the index page
         router.attach("/login", LoginResource.class);
+        router.attach("/quiz", QuizResource.class);
         
         // handles static content: css, images, etc
         router.attach("/res", new Directory(getContext(), ROOT_URI) );
