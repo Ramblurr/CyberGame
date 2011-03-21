@@ -26,6 +26,7 @@ public class EmailStore {
     String mUsername;
     String mBaseDir;
     String mMailDirLoc;
+    String[] mFolders;
     Store mStore;
     
     private class FolderInfo {
@@ -45,26 +46,36 @@ public class EmailStore {
     }
     
     static final Map<String, FolderInfo> mFolderMap = new HashMap<String, FolderInfo>();
-      
+
     /**
      * Loads the EmailStore for the specified user at the given base directory.
+     * 
      * @param username
      * @param basedir
-     * @throws MessagingException 
+     * @param folders
+     *            the folders to use, if null defaults to 'inbox' and 'sent'
+     * @throws MessagingException
      */
-    public EmailStore(String username, String basedir) throws Exception {
+    public EmailStore(String username, String basedir, String[] folders) throws Exception {
         mUsername = username;
         mBaseDir = basedir;
         mMailDirLoc = FetchDataset.MailDirDir(basedir, username);
+        mFolders = folders;
         
         Session session = Session.getInstance(new Properties());
         mStore = session.getStore(new URLName(mMailDirLoc));
         mStore.connect(); //useless with Maildir but included here for consistency
         
-        //open the inbox
-        openFolder("inbox");
-        //open the sent folder
-        openFolder( "sent" );
+        if (folders == null) {
+            //open the inbox
+            openFolder("inbox");
+            //open the sent folder
+            openFolder("sent");
+        } else {
+            for (int i = 0; i < folders.length; i++) {
+                openFolder(folders[i]);
+            }
+        }
     }
     
     /**

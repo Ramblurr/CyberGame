@@ -28,19 +28,19 @@ public class QuestionGeneratorTest {
     public void setUp() throws Exception {
         gen = new QuestionGenerator();
 
-        String user = "ctlink@binaryelysium.com";
+        String user = "farhorizons@binaryelysium.com";
         String basedir = "C:\\Users\\Casey\\Documents\\workspace\\tmp";
-        EmailStore store = new EmailStore(user, basedir);
+        String[] folders = {"inbox"};
+        EmailStore store = new EmailStore(user, basedir, folders);
         
-        
-        gen.registerType(Question.Type.FromWhen, new FromWhenFactory(store) );
-        gen.registerType( Question.Type.FromWhom, new FromWhomFactory( store ) );
-        gen.registerType( Question.Type.FromSubject, new FromSubjectFactory(
-                store ) );
-        gen.registerType( Question.Type.SentSubject, new SentSubjectFactory(
-                store ) );
-        gen.registerType( Question.Type.SentWhen, new SentWhenFactory( store ) );
-        gen.registerType( Question.Type.SentWhom, new SentWhomFactory( store ) );
+        String inbox = "inbox";
+        String sent = "sent";
+        gen.registerType(Question.Type.FromWhen, new FromWhenFactory(store, sent, inbox));
+        gen.registerType(Question.Type.FromWhom, new FromWhomFactory(store, sent, inbox));
+        gen.registerType(Question.Type.FromSubject, new FromSubjectFactory(store, sent, inbox));
+        gen.registerType(Question.Type.SentSubject, new SentSubjectFactory(store, sent, inbox));
+        gen.registerType(Question.Type.SentWhen, new SentWhenFactory(store, sent, inbox));
+        gen.registerType(Question.Type.SentWhom, new SentWhomFactory(store, sent, inbox));
     }
     
     @Test

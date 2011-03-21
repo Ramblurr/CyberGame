@@ -10,8 +10,8 @@ import javax.mail.MessagingException;
  */
 public class FromWhenFactory extends EmailQuestionFactory {
 
-    public FromWhenFactory(EmailStore store) {
-        super(store);
+    public FromWhenFactory(EmailStore store, String sent_folder, String inbox_folder) {
+        super(store, sent_folder, inbox_folder);
     }
 
     @Override

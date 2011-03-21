@@ -5,8 +5,8 @@ import javax.mail.MessagingException;
 
 public class SentSubjectFactory extends EmailQuestionFactory {
 
-    public SentSubjectFactory(EmailStore store) {
-        super(store);
+    public SentSubjectFactory(EmailStore store, String sent_folder, String inbox_folder) {
+        super(store, sent_folder, inbox_folder);
     }
 
     @Override

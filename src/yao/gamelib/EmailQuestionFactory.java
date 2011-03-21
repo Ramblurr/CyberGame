@@ -12,9 +12,17 @@ import javax.mail.MessagingException;
 public abstract class EmailQuestionFactory implements QuestionFactory {
     protected EmailStore mStore;
     final static int     NUM_ANSWERS = 4;
+    private String mInbox = "inbox";
+    private String mSent = "sent";
 
     public EmailQuestionFactory(EmailStore store) {
         mStore = store;
+    }
+
+    public EmailQuestionFactory(EmailStore store, String sent_folder, String inbox_folder) {
+        mStore = store;
+        mInbox = inbox_folder;
+        mSent = sent_folder;
     }
 
     @Override
@@ -75,11 +83,11 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             range_days = randGen.nextInt( max_range_days );
         } while (range_days <= min_range_days);
 
-        System.out.println( "Using date range " + range_days );
+        //        System.out.println( "Using date range " + range_days );
         // where in the range will the actual answer fall?
         int date_position = randGen.nextInt( range_days );
 
-        System.out.println( "Using date position " + date_position );
+        //        System.out.println( "Using date position " + date_position );
         // calculate the range in days
         int days_after_date = range_days - date_position;
         int days_before_date = date_position;
@@ -97,11 +105,11 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         c.add( Calendar.DATE, days_after_date );
         Date end_range = c.getTime();
 
-        System.out.println( "Using date range " + begin_range.toString()
-                + " to " + end_range.toString() );
+        //        System.out.println( "Using date range " + begin_range.toString()
+        //                + " to " + end_range.toString() );
 
         // get all messages within the range
-        Message[] msgs = mStore.getMessageInRange( "inbox", begin_range,
+        Message[] msgs = mStore.getMessageInRange(mInbox, begin_range,
                 end_range );
         // we need at least NUM_ANSWERS messages in the range that aren't the
         // actual message so we expand the range by 1 day on each end until
@@ -116,7 +124,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             c.setTime( end_range );
             c.add( Calendar.DATE, 1 );
             end_range = c.getTime();
-            msgs = mStore.getMessageInRange( "inbox", begin_range, end_range );
+            msgs = mStore.getMessageInRange(mInbox, begin_range, end_range);
         }
         return msgs;
     }
@@ -142,7 +150,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             // check for duplicate answers
             if ( !ans_date.equals( m.getSentDate() )
                     && !answers.contains( ans_text ) ) {
-                System.out.println( "Using index: " + list.get( index ) );
+                //                System.out.println( "Using index: " + list.get( index ) );
                 answers.add( ans_text );
                 ++found;
             }

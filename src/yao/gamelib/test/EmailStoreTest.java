@@ -21,7 +21,7 @@ public class EmailStoreTest {
     @Before
     public void before() {
         try {
-            store = new EmailStore( user, basedir );
+            store = new EmailStore(user, basedir, null);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

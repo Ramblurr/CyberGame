@@ -22,7 +22,7 @@ public class FetchDatasetTest {
         int port = 993;
         String basedir = "C:\\Users\\Casey\\Documents\\workspace\\tmp";
 
-        fetcher = new FetchDataset(user, pass, server, port, basedir );        
+        fetcher = new FetchDataset(user, pass, server, port, basedir, null);
     }
 
     @Test

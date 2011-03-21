@@ -27,6 +27,7 @@ public class FetchDataset {
     private final String mServer;
     private final int mPort;
     private final String mBaseDir;
+    private final String[] mFolders;
 
     private final Properties mProperties = new Properties();
     private final Session mSession = Session.getDefaultInstance(mProperties, null);
@@ -35,21 +36,29 @@ public class FetchDataset {
     private FileHandler mFh;
 
     /**
-     * Class encapsulates connection to the email server and provides methods to download email as a dataset
-     * It connects to the server using IMAP.
-     * @param username username of email account
-     * @param password password of email account
-     * @param server IMAP server hostname, e.g., mail.vt.edu
-     * @param port server port, e.g., 993
-     * @param basedir the absolute path to a base directory to store logs and mail
+     * Class encapsulates connection to the email server and provides methods to download email as a dataset It connects to the server using IMAP.
+     * 
+     * @param username
+     *            username of email account
+     * @param password
+     *            password of email account
+     * @param server
+     *            IMAP server hostname, e.g., mail.vt.edu
+     * @param port
+     *            server port, e.g., 993
+     * @param basedir
+     *            the absolute path to a base directory to store logs and mail
+     * @param folders
+     *            an array of foldernames to download, if null will default to inbox and sent folder
      */
     public FetchDataset(String username, String password, String server,
-            int port, String basedir ) {
+ int port, String basedir, String[] folders) {
         this.mUsername = username;
         this.mPassword = password;
         this.mServer = server;
         this.mPort = port;
         this.mBaseDir = basedir;
+        this.mFolders = folders;
 
         mLogger = Logger.getLogger(mUsername );
         try {
@@ -89,10 +98,14 @@ public class FetchDataset {
         return true;
     }
 
+    private Folder GetFolder(String name) throws MessagingException {
+        Folder folder = mImap.getFolder(name);
+        folder.open(Folder.READ_ONLY);
+        return folder;
+    }
+
     private Folder GetInbox() throws MessagingException {
-        Folder inbox = mImap.getFolder("inbox");
-        inbox.open(Folder.READ_ONLY);
-        return inbox;
+        return GetFolder("inbox");
     }
     
     public Folder GetSentFolder() throws MessagingException {
@@ -131,10 +144,15 @@ public class FetchDataset {
 
     public boolean DownloadMail() {
         Store store;
-        Folder remote_inbox, local_inbox;
-        Folder remote_sent, local_sent;
+        Folder[] remote_folders = null, local_folders = null;
+        if( mFolders != null ) {
+            remote_folders = new Folder[mFolders.length];
+            local_folders = new Folder[mFolders.length];
+        }
+        Folder remote_inbox = null, local_inbox = null;
+        Folder remote_sent = null, local_sent = null;
 
-        mLogger.log( Level.INFO, "Establishing Connection...");
+        mLogger.log(Level.FINE, "Establishing Connection...");
         if( !CreateConnection() ) {
             mLogger.log( Level.SEVERE, "Could not connect. Aborting.");
             return false;
@@ -143,11 +161,18 @@ public class FetchDataset {
 
 
         try {
-            mLogger.log( Level.INFO, "Preparing local Maildir");
+            mLogger.log(Level.FINE, "Preparing local Maildir");
             store = PrepareMaildir();
             mLogger.log( Level.INFO, "Getting remote folders");
-            remote_inbox = GetInbox();
-            remote_sent = GetSentFolder();
+            if (mFolders != null) {
+                for (int i = 0; i < mFolders.length; ++i) {
+                    mLogger.log(Level.FINE, "\tscreating remote folder for" + mFolders[i]);
+                    remote_folders[i] = GetFolder(mFolders[i]);
+                }
+            } else {
+                remote_inbox = GetInbox();
+                remote_sent = GetSentFolder();
+            }
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
             mLogger.log( Level.SEVERE, "Could not create Maildir.");
@@ -160,8 +185,15 @@ public class FetchDataset {
 
         try {
             mLogger.log( Level.INFO, "Getting local folders");
-            local_inbox = store.getFolder("INBOX");
-            local_sent = store.getFolder("SENT");
+            if (mFolders != null) {
+                for (int i = 0; i < mFolders.length; ++i) {
+                    mLogger.log(Level.FINE, "\tscreating local folder for" + mFolders[i]);
+                    local_folders[i] = store.getFolder(mFolders[i]);
+                }
+            } else {
+                local_inbox = store.getFolder("INBOX");
+                local_sent = store.getFolder("SENT");
+            }
         } catch( MessagingException e ) {
             e.printStackTrace();
             mLogger.log( Level.SEVERE, "Could not retrieve local folders");
@@ -169,23 +201,41 @@ public class FetchDataset {
         }
 
 
-        Message inbox_messages[], sent_messages[];
+        Message[][] messages = null;
+        if (mFolders != null) {
+            messages = new Message[mFolders.length][];
+        }
+        Message inbox_messages[] = null, sent_messages[] = null;
         try {
             mLogger.log( Level.INFO, "Getting messages");
-            inbox_messages = remote_inbox.getMessages();
-            sent_messages = remote_sent.getMessages();
+            if (mFolders != null) {
+                for (int i = 0; i < mFolders.length; ++i) {
+                    mLogger.log(Level.FINE, "\tsdownloading messages for " + mFolders[i]);
+                    messages[i] = remote_folders[i].getMessages();
+                }
+            } else {
+                inbox_messages = remote_inbox.getMessages();
+                sent_messages = remote_sent.getMessages();
+            }
         } catch (MessagingException e) {
             e.printStackTrace();
             mLogger.log( Level.SEVERE, "Could not retrieve remote messages");
             return false;
         }
-        mLogger.log( Level.INFO, "Cleaning message list.");
-        inbox_messages = CleanMessages(inbox_messages);
+        //        mLogger.log(Level.FINE, "Cleaning message list.");
+        //        inbox_messages = CleanMessages(inbox_messages);
 
         try {
             mLogger.log( Level.INFO, "Saving messages locally");
-            local_inbox.appendMessages(inbox_messages);
-            local_sent.appendMessages( sent_messages );
+            if (mFolders != null) {
+                for (int i = 0; i < mFolders.length; ++i) {
+                    mLogger.log(Level.FINE, "\tsaving messages for " + mFolders[i]);
+                    local_folders[i].appendMessages(messages[i]);
+                }
+            } else {
+                local_inbox.appendMessages(inbox_messages);
+                local_sent.appendMessages(sent_messages);
+            }
         } catch (MessagingException e) {
             e.printStackTrace();
             mLogger.log( Level.SEVERE, "Could not append local messages");

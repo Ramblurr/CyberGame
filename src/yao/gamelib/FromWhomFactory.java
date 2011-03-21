@@ -5,8 +5,8 @@ import javax.mail.MessagingException;
 
 public class FromWhomFactory extends EmailQuestionFactory {
 
-    public FromWhomFactory(EmailStore store) {
-        super(store);
+    public FromWhomFactory(EmailStore store, String sent_folder, String inbox_folder) {
+        super(store, sent_folder, inbox_folder);
     }
 
     @Override
