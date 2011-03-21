@@ -20,9 +20,10 @@ public class FetchDatasetTest {
         String pass = "";
         String server = "";
         int port = 993;
+        int max = 10;
         String basedir = "C:\\Users\\Casey\\Documents\\workspace\\tmp";
 
-        fetcher = new FetchDataset(user, pass, server, port, basedir, null);
+        fetcher = new FetchDataset(user, pass, server, port, basedir, null, max);
     }
 
     @Test
