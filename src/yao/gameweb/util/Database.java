@@ -15,16 +15,16 @@ import yao.gamelib.Question;
 import yao.gamelib.StoredQuestion;
 
 /**
- * This is a singleton class that encapsulates access to the Database. 
+ * This is a singleton class that encapsulates access to the Database.
  * @author Casey
  *
  */
 public class Database {
-    
+
     private static class DatabaseHolder  {
         private static final Database INSTANCE = new Database();
     }
-    
+
     /**
      * Get the instance of the Database class
      * @return the database
@@ -32,7 +32,7 @@ public class Database {
     public static Database getInstance() {
         return DatabaseHolder.INSTANCE;
     }
-    
+
     Connection mConn;
     static final int VERSION = 0;
 
@@ -45,9 +45,9 @@ public class Database {
             e.printStackTrace();
         }
     }
-    
+
     private void prepareDatabase() throws SQLException, FileNotFoundException, IOException {
-        
+
         Statement stat = mConn.createStatement();
         stat.executeUpdate(
                 "CREATE TABLE if not exists answers (" +
@@ -87,7 +87,7 @@ public class Database {
                     "FOREIGN KEY(answerId) REFERENCES answers(answerId)"+
                 ");");
     }
-    
+
     /**
      * Stores a question in the database. The question text, type, and answers will be stored.
      * @param question the question to store
@@ -97,7 +97,7 @@ public class Database {
         int question_id = -1;
         boolean success = false;
         try {
-            mConn.setAutoCommit(false); // this will be one big transaction
+//            mConn.setAutoCommit(false); // this will be one big transaction
             // first, insert the question itself
             PreparedStatement prep = mConn.prepareStatement( "INSERT INTO questions values (?, ?, ?, ?);");
             prep.setNull(1, java.sql.Types.INTEGER); // id
@@ -108,25 +108,25 @@ public class Database {
             ResultSet rs = prep.getGeneratedKeys();
             rs.next();
             question_id = rs.getInt(1); // save the index of the newly created question
-            
+
             // second, insert the correct answer
             prep = mConn.prepareStatement( "INSERT INTO answers values (?, ?, ?, ?);");
             prep.setNull(1, java.sql.Types.INTEGER);
             prep.setString(2, question.getType().toString());
             prep.setString(3, question.getAnswer());
             prep.setInt(4, question_id);
-            
+
             prep.executeUpdate();
             rs = prep.getGeneratedKeys();
             rs.next();
             int answer_id = rs.getInt(1); // save the index of the correct answer
-            
+
             // third, update the question row with the index of the newly created answer
             prep = mConn.prepareStatement( "UPDATE questions SET correctAnswerId=? WHERE questionId=?;");
             prep.setInt(1, answer_id);
             prep.setInt(2, question_id);
             prep.executeUpdate();
-            
+
             // fourth, insert all the fake questions
             prep = mConn.prepareStatement( "INSERT INTO answers values (?, ?, ?, ?);");
             for( String answer : question.getFakeAnswers() ) {
@@ -137,7 +137,7 @@ public class Database {
                 prep.addBatch();
             }
             prep.executeBatch();
-            mConn.commit(); // commit the transaction!
+//            mConn.commit(); // commit the transaction!
         } catch (SQLException e) {
             System.err.println("Inserting Question failed!");
             System.err.println("Transaction is being rolled back");
@@ -149,17 +149,17 @@ public class Database {
             }
             e.printStackTrace();
         } finally {
-            try {
-                mConn.setAutoCommit(true);
+//            try {
+//                mConn.setAutoCommit(true);
                 success = true;
-            } catch (SQLException e) {
-                System.err.println("setAutoCommit true failed!");
-                e.printStackTrace();
-            }
+//            } catch (SQLException e) {
+//                System.err.println("setAutoCommit true failed!");
+//                e.printStackTrace();
+//            }
         }
         return success ? question_id : -1;
     }
-    
+
     /**
      * Retrieve a question from the database
      * @param id the unique id of the question to retrieve
@@ -174,15 +174,15 @@ public class Database {
             if( rs.next() ) {
                 q = populateQuestion(rs);
             }
-        } catch (SQLException e) {    
+        } catch (SQLException e) {
         }
-        
+
         return q;
     }
 
     /**
      * Get some stored questions
-     * 
+     *
      * @param number
      * @return an array of questions
      */
@@ -239,7 +239,7 @@ public class Database {
 
     /**
      * Stores a user's response to a question.
-     * 
+     *
      * @param user_id
      * @param question_id
      * @param answer_id
@@ -259,7 +259,7 @@ public class Database {
     }
 
     /**
-     * Adds the username to the database, if it does not exist, otherwise 
+     * Adds the username to the database, if it does not exist, otherwise
      * fetches the user from the database.
      * @param username
      * @return the user id
@@ -302,14 +302,14 @@ public class Database {
 
     /**
      * Create a new user session. Does NOT check if the user has an existing session.
-     * 
+     *
      * @param user the username of the user
      * @return a new unique session id
      */
     public String makeSession(String user) {
         try {
             int user_id = createOrGetUser(user.toLowerCase().trim());
-            String sessionid = UUID.randomUUID().toString();  
+            String sessionid = UUID.randomUUID().toString();
             PreparedStatement prep = mConn.prepareStatement( "insert into sessions values (?, ?);");
             prep.setString(1, sessionid);
             prep.setInt(2, user_id);
@@ -322,7 +322,7 @@ public class Database {
         }
         return null;
     }
-    
+
     /**
      * Returns the username associated with the supplied session id.
      * @param sessionid used to look up the user
@@ -332,7 +332,7 @@ public class Database {
         Statement stat;
         try {
             stat = mConn.createStatement();
-  
+
             PreparedStatement prep = mConn.prepareStatement( "select userId from sessions where id = ?;");
             prep.setString(1, sessionid);
             ResultSet rs = prep.executeQuery();
@@ -346,5 +346,5 @@ public class Database {
         }
         return -1;
     }
-    
+
 }

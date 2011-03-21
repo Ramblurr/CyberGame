@@ -16,11 +16,11 @@ public class GameApplication extends Application {
     @Override
     public Restlet createInboundRoot() {
         Router router = new Router(this.getContext());
-        
+
         // handles the index page
         router.attach("/login", LoginResource.class);
         router.attach("/quiz", QuizResource.class);
-        
+
         // handles static content: css, images, etc
         router.attach("/res", new Directory(getContext(), ROOT_URI) );
         router.attach("/", RootResource.class);
@@ -30,5 +30,5 @@ public class GameApplication extends Application {
 //        router.attach("/race/{race_id}/runner/{runner_id}", RaceRunnerResource.class);
         return router;
        }
-    
+
 }

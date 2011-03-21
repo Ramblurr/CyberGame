@@ -13,7 +13,7 @@ import yao.gameweb.util.Database;
 
 
 public class DatabaseTest {
-    
+
     @Test
     public void testDBConnection() {
         Database db = Database.getInstance();
@@ -49,7 +49,7 @@ public class DatabaseTest {
 
         Assert.assertTrue( answersListActual.containsAll(answersListExpected) );
         Assert.assertEquals( answersListExpected.size() , answersListActual.size());
-        
+
         StoredQuestion q3 = db.retrieveQuestion(-1);
         Assert.assertNull(q3);
     }
