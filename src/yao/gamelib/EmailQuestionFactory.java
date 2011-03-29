@@ -7,13 +7,14 @@ import java.util.Date;
 import java.util.Random;
 
 import javax.mail.Message;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 
 public abstract class EmailQuestionFactory implements QuestionFactory {
     protected EmailStore mStore;
     final static int     NUM_ANSWERS = 4;
     private String mInbox = "inbox";
-    private String mSent = "sent";
+    private String mSent = "SENT";
 
     public EmailQuestionFactory(EmailStore store) {
         mStore = store;
@@ -32,7 +33,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
      * Given the message, return a string containing the fake answer This
      * usually would be whatever field the email question represents: subject,
      * date, etc.
-     * 
+     *
      * @param m
      *            the message to create a fake answer from
      * @return a string containing the fake answer
@@ -45,7 +46,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
 
     /**
      * Given two answers return whether they are duplicates. Default implementation calls .equals() Some email questions might want to override this to perform more robust duplication detect (such as comparing for email addresses).
-     * 
+     *
      * @param answer1
      *            first answer
      * @param answer2
@@ -68,7 +69,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             return null;
         }
     }
-    
+
     protected EmailQuestion setEmailDataSent(EmailQuestion q) {
         try {
             Message m = mStore.getNewMessageSent();
@@ -139,6 +140,9 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         // we need at least NUM_ANSWERS messages in the range that aren't the
         // actual message so we expand the range by 1 day on each end until
         // we have at least NUM_ANSWERS+1 messages
+        if(msgs == null ){
+            System.err.println("ERROR!! getMessageInRange returned null ");
+        }
         while (msgs.length <= NUM_ANSWERS + 1) {
             c.clear();
             c.setTime( begin_range );
@@ -191,7 +195,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
 
     /**
      * Removes null fake answers (when an answer couldnt be found) And removes fake answers that are duplicates of the actual answer.
-     * 
+     *
      * @param q
      * @param answers
      * @return

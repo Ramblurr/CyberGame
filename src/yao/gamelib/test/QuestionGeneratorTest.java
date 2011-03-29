@@ -31,13 +31,13 @@ public class QuestionGeneratorTest {
     public void setUp() throws Exception {
         gen = new QuestionGenerator();
 
-        String user = "farhorizons@binaryelysium.com";
-        String basedir = "C:\\Users\\Casey\\Documents\\workspace\\tmp";
-        String[] folders = { "inbox", "sent" };
-        EmailStore store = new EmailStore(user, basedir, folders);
-        
+        String user = "danfeng";
+        String basedir = "/home/ramblurr/src/workspace/CyberGame";
         String inbox = "inbox";
-        String sent = "sent";
+        String sent = "SENT";
+        String[] folders = { inbox, sent };
+        EmailStore store = new EmailStore(user, basedir, folders);
+
         gen.registerType(Question.Type.FromWhen, new FromWhenFactory(store, sent, inbox));
         gen.registerType(Question.Type.FromWhom, new FromWhomFactory(store, sent, inbox));
         gen.registerType(Question.Type.FromSubject, new FromSubjectFactory(store, sent, inbox));

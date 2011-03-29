@@ -12,7 +12,7 @@ public class FromSubjectFactory extends EmailQuestionFactory {
     @Override
     public Question makeQuestion() {
         FromSubjectQuestion q = new FromSubjectQuestion();
-        
+
         return setEmailDataInbox(q);
 
     }
