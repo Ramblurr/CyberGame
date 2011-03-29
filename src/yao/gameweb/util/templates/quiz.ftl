@@ -8,9 +8,10 @@
                 <p>${question.text}
                 <ul>
                 <#list question.answers as answer>
+                <input type="hidden" name="question_${question.id}" value="${question.id}" />
                 <li>
                     <label class="label_radio" for="ans${answer.id}">
-                        <input name="ans${answer.id}" id="ans${answer.id}" value="${answer.id}" type="radio" />
+                        <input name="questions_${question.id}" id="ans${answer.id}" value="${answer.id}" type="radio" />
                     ${answer.text}
                     </label>
                 </li>

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.restlet.data.CharacterSet;
-import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -48,6 +47,7 @@ public class QuizResource extends GameResource {
             for (StoredQuestion q : questions) {
                 QuestionStub qstub = new QuestionStub();
                 qstub.text = q.getQuestion();
+                qstub.id = q.getId();
                 ArrayList<AnswerStub> answerStubs = new ArrayList<AnswerStub>();
                 for (AnswerStub stub : q.getFakeAnswerStubs()) {
                     answerStubs.add(stub);
@@ -72,6 +72,35 @@ public class QuizResource extends GameResource {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Post
+    public void acceptItem(Representation entity) {
+        System.out.println("WTF HAI");
+        Representation result = null;
+        Representation rep = null;
+
+//        Map<String, Object> pageData = new HashMap<String, Object>();
+        String username = verifySession();
+        if (username == null)
+            return;
+
+        Form form = new Form(entity);
+        String resp_text = "";
+        String resp_debug = "";
+        for(String name : form.getNames() ) {
+            resp_debug += name + "\n";
+            if(name.startsWith( "question_" )) {
+                String id_str = form.getFirstValue( name );
+                int qid = Integer.parseInt( id_str );
+                String answer = form.getFirstValue( "questions_"+qid );
+                resp_text += "For " + qid + " answer: " + answer + "\n";
+            }
+        }
+        setStatus(Status.SUCCESS_CREATED);
+        rep = new StringRepresentation(resp_text + "\n\n\n" + resp_debug,
+                MediaType.TEXT_PLAIN);
+        result = rep;
     }
 
 }
