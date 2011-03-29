@@ -12,7 +12,6 @@ import javax.mail.MessagingException;
 
 public abstract class EmailQuestionFactory implements QuestionFactory {
     protected EmailStore mStore;
-    final static int     NUM_ANSWERS = 4;
     private String mInbox = "inbox";
     private String mSent = "SENT";
 
@@ -62,7 +61,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             Message m = mStore.getNewMessageInbox();
 
             q = setEmailDataReceived(m, q);
-            q.setFakeAnswers(cleanAnswers(q, makeFakeAnswers(m, getRandomRange(m, mInbox))));
+            q.setFakeAnswers(cleanAnswers(q, makeFakeAnswers(q, m, getRandomRange(m, mInbox))));
             return q;
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -78,7 +77,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
                 return null;
 
             q = setEmailDataSent(m, q);
-            q.setFakeAnswers(cleanAnswers(q, makeFakeAnswers(m, getRandomRange(m, mSent))));
+            q.setFakeAnswers(cleanAnswers(q, makeFakeAnswers(q, m, getRandomRange(m, mSent))));
             return q;
 
         } catch (MessagingException e) {
@@ -101,7 +100,6 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
     private EmailQuestion setEmailDataSent( Message m, EmailQuestion q ) {
         try {
             q.setSubject(m.getSubject());
-            System.out.println();
             q.setSender( m.getRecipients( RecipientType.TO )[0].toString() ); // TODO this only gets one sender, should we look at all the senders?
             q.setDate(m.getSentDate().toString());
         } catch (MessagingException e) {
@@ -155,7 +153,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         if(msgs == null ){
             System.err.println("ERROR!! getMessageInRange returned null ");
         }
-        while (msgs.length <= NUM_ANSWERS + 1) {
+        while (msgs.length <= QuestionGenerator.NUM_FAKE_ANSWERS + 1) {
             c.clear();
             c.setTime( begin_range );
             c.add( Calendar.DATE, -1 );
@@ -170,7 +168,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         return msgs;
     }
 
-    private String[] makeFakeAnswers( Message m, Message[] msgs )
+    private String[] makeFakeAnswers( EmailQuestion q, Message m, Message[] msgs )
             throws MessagingException {
         // using Random.nextInt() is inappropriate here as we
         // don't want any repeat numbers. So, create a list of
@@ -181,17 +179,44 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         }
         Collections.shuffle( list );
 
-        ArrayList<String> answers = new ArrayList<String>( NUM_ANSWERS );
+        Random randGen = new Random();
+        // first determine if we want a "none of the above" option
+        double probability = 0.25; // 25%
+        boolean do_none_above = Math.random() < probability;
+        //second, determine if the real answer should be included with the none of the above
+        probability = 0.5; // 50%
+        boolean include_real = Math.random() < probability;
+
+        int total_number_answers = QuestionGenerator.NUM_FAKE_ANSWERS; // 4 fake answers, 1 real = 5 total
+        if(do_none_above) {
+            if( include_real ) {
+                System.out.print("include real - ");
+                q.setNoneOfTheAbove( Question.NoneAboveType.WithRealAnswer );
+                // 3 fake answers, 1 none, 1 real = 5 total
+            } else {
+                System.out.print("NO real  - ");
+                q.setNoneOfTheAbove( Question.NoneAboveType.WithoutRealAnswer );
+                total_number_answers += 1; // 4 fake, 1 none = 5 total
+            }
+        }
+
+        ArrayList<String> answers = new ArrayList<String>( total_number_answers );
+        if( do_none_above ) {
+            answers.add( QuestionGenerator.NONE_TEXT );
+        }
+
+
         // randomly pick messages in the range to be fake answers
-        int found = 0, index = 0;
-        while (found < NUM_ANSWERS && index < list.size()) {
+        int found = answers.size(), index = 0;
+        while (found < total_number_answers && index < list.size()) {
             Message ans_m = msgs[list.get( index )];
             Date ans_date = ans_m.getSentDate();
             String ans_text = makeFakeAnswer(ans_m).trim();
             // check for duplicate answers
             boolean duplicate = false;
             for (String a : answers) {
-                duplicate = isDuplicate(a, ans_text);
+                if( !a.equals( QuestionGenerator.NONE_TEXT ) )
+                    duplicate = isDuplicate(a, ans_text);
             }
             if (!duplicate) {
                 //                System.out.println( "Using index: " + list.get( index ) );
@@ -200,7 +225,8 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             }
             ++index;
         }
-        String[] answersArr = new String[NUM_ANSWERS];
+        System.out.println(answers.size() + " total");
+        String[] answersArr = new String[answers.size()];
         answers.toArray( answersArr );
         return answersArr;
     }
@@ -214,7 +240,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
      */
     private String[] cleanAnswers(EmailQuestion q, String[] answers) {
         for (int i = 0; i < answers.length; i++) {
-            if (answers[i] != null && isDuplicate(answers[i], q.getAnswer()))
+            if (answers[i] != null && !answers[i].equals( QuestionGenerator.NONE_TEXT ) && isDuplicate(answers[i], q.getAnswer()))
                 answers[i] = null; // this null will be removed in the next step
         }
         int num_not_null = 0;

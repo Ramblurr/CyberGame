@@ -3,6 +3,7 @@ package yao.gamelib;
 import yao.gameweb.util.AnswerStub;
 
 public class StoredQuestion implements Question {
+    NoneAboveType mNoneOfTheAbove = Question.NoneAboveType.Normal;
     int mId;
     String mQuestion;
     String mAnswer;
@@ -10,15 +11,16 @@ public class StoredQuestion implements Question {
     AnswerStub[] mFakeAnswerStubs;
     Question.Type mType;
     StoredQuestion() {}
-    
+
     public StoredQuestion(int id, String question, String answer, int realAnswer_id,
- AnswerStub[] fakeAnswers, Type type) {
+ AnswerStub[] fakeAnswers, Type type, NoneAboveType noneOfTheAbove) {
         this.mId = id;
         this.mQuestion = question;
         this.mAnswer = answer;
         this.mFakeAnswerStubs = fakeAnswers;
         this.mType = type;
         this.mAnswerId = realAnswer_id;
+        this.mNoneOfTheAbove = noneOfTheAbove;
     }
 
     @Override
@@ -72,6 +74,16 @@ public class StoredQuestion implements Question {
 
     public void setType(Question.Type type) {
         this.mType = type;
+    }
+
+    @Override
+    public NoneAboveType getNoneOfTheAbove()
+    {
+        return mNoneOfTheAbove;
+    }
+
+    public void setNoneOfTheAbove( NoneAboveType flag ) {
+        mNoneOfTheAbove = flag;
     }
 
 }

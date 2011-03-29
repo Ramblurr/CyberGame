@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import yao.gamelib.FromSubjectQuestion;
+import yao.gamelib.Question;
 import yao.gamelib.StoredQuestion;
 import yao.gameweb.util.Database;
 
@@ -26,11 +27,13 @@ public class DatabaseTest {
         String sender = "Joe Bob";
         String date = "2011/02/15";
         String subject = "Secret Plans";
+        Question.NoneAboveType noneAboveType = Question.NoneAboveType.WithRealAnswer;
         q.setSender(sender);
         q.setDate(date);
         q.setSubject(subject);
+        q.setNoneOfTheAbove( noneAboveType );
 
-        String[] answers = {"Lunch today?", "Bad news...", "Quick Question"};
+        String[] answers = {"Lunch today?", "Bad news...", "Quick Question", "None of the above"};
         q.setFakeAnswers(answers);
 
         Database db = Database.getInstance();
@@ -43,6 +46,7 @@ public class DatabaseTest {
         Assert.assertEquals(q.getQuestion(), q2.getQuestion());
         Assert.assertEquals(q.getAnswer(), q2.getAnswer());
         Assert.assertEquals(question_id, q2.getId());
+        Assert.assertEquals( q.getNoneOfTheAbove(), q2.getNoneOfTheAbove() );
 
         List<String> answersListExpected = Arrays.asList(q.getFakeAnswers());
         List<String> answersListActual = Arrays.asList(q2.getFakeAnswers());

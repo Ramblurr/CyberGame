@@ -142,7 +142,17 @@ public class SetupQuestions {
                 }
                 System.out.println(q.getType());
                 System.out.println("\tQ:" + q.getQuestion());
-                System.out.println("\tA(real):" + q.getAnswer());
+
+                switch( q.getNoneOfTheAbove() ) {
+                    case Normal:
+                    case WithRealAnswer:
+                        System.out.println("\tA(real):" + q.getAnswer());
+                        break;
+                    case WithoutRealAnswer:
+                    default:
+                        break;
+                }
+
                 for (String fake : q.getFakeAnswers()) {
                     System.out.println("\tA:" + fake);
                 }

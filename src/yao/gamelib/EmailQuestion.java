@@ -1,17 +1,18 @@
 package yao.gamelib;
 
 public abstract class EmailQuestion implements Question {
-   
-    protected String mSender; 
+
+    protected String mSender;
     protected String mSubject;
     protected String mDate;
     protected String[] mFakeAnswers;
+    protected NoneAboveType mNoneOfTheAbove = Question.NoneAboveType.Normal;
     protected int mId = -1;
-    
+
     public EmailQuestion()
     {
     }
-    
+
     public EmailQuestion(String sender, String subject, String date, int id)
     {
         mSender = sender;
@@ -28,13 +29,13 @@ public abstract class EmailQuestion implements Question {
 
     @Override
     abstract public String getQuestion();
-    
+
     @Override
     abstract public String getAnswer();
 
     @Override
     abstract public Type getType();
-    
+
     public void setSender(String sender){
         mSender = sender;
     }
@@ -54,6 +55,15 @@ public abstract class EmailQuestion implements Question {
     @Override
     public String[] getFakeAnswers() {
         return mFakeAnswers;
+    }
+
+    @Override
+    public NoneAboveType getNoneOfTheAbove() {
+        return mNoneOfTheAbove;
+    }
+
+    public void setNoneOfTheAbove(NoneAboveType flag) {
+        mNoneOfTheAbove = flag;
     }
 
     @Override

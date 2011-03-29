@@ -46,17 +46,30 @@ public class QuestionGeneratorTest {
         gen.registerType(Question.Type.SentWhom, new SentWhomFactory(store, sent, inbox));
     }
 
+    public void testQuestion(Question q)
+    {
+        Assert.assertNotNull(q);
+        System.out.println("Q:" + q.getQuestion());
+        System.out.println("A:" + q.getAnswer());
+        boolean has_none = false;
+        for ( String fake : q.getFakeAnswers() ) {
+            if( fake.equals(QuestionGenerator.NONE_TEXT) )
+                has_none = true;
+            System.out.println( "A:" + fake );
+        }
+        if( has_none ) {
+            Assert.assertTrue( q.getNoneOfTheAbove() != Question.NoneAboveType.Normal  );
+        } else {
+            Assert.assertTrue( q.getNoneOfTheAbove() == Question.NoneAboveType.Normal  );
+        }
+    }
+
     @Test
     public void testFromWhenQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.FromWhen);
         FromWhenQuestion fwq = (FromWhenQuestion) q;
-
-        System.out.println("Q:" + fwq.getQuestion());
-        System.out.println("A:" + fwq.getAnswer());
-        for ( String fake : fwq.getFakeAnswers() ) {
-            System.out.println( "A:" + fake );
-        }
         Assert.assertNotNull(fwq);
+        testQuestion( q );
     }
 
 
@@ -65,12 +78,8 @@ public class QuestionGeneratorTest {
         Question q = gen.createQuestionFromType(Question.Type.FromWhom);
         FromWhomQuestion fwq = (FromWhomQuestion) q;
 
-        System.out.println("Q:" + fwq.getQuestion());
-        System.out.println("A:" + fwq.getAnswer());
-        for ( String fake : fwq.getFakeAnswers() ) {
-            System.out.println( "A:" + fake );
-        }
         Assert.assertNotNull(fwq);
+        testQuestion( q );
     }
 
 
@@ -79,12 +88,8 @@ public class QuestionGeneratorTest {
         Question q = gen.createQuestionFromType(Question.Type.FromSubject);
         FromSubjectQuestion fwq = (FromSubjectQuestion) q;
 
-        System.out.println("Q:" + fwq.getQuestion());
-        System.out.println("A:" + fwq.getAnswer());
-        for ( String fake : fwq.getFakeAnswers() ) {
-            System.out.println( "A:" + fake );
-        }
         Assert.assertNotNull(fwq);
+        testQuestion( q );
     }
 
 
@@ -93,12 +98,8 @@ public class QuestionGeneratorTest {
         Question q = gen.createQuestionFromType(Question.Type.SentWhen);
         SentWhenQuestion fwq = (SentWhenQuestion) q;
 
-        System.out.println("Q:" + fwq.getQuestion());
-        System.out.println("A:" + fwq.getAnswer());
-        for (String fake : fwq.getFakeAnswers()) {
-            System.out.println("A:" + fake);
-        }
         Assert.assertNotNull(fwq);
+        testQuestion( q );
     }
 
 
@@ -107,12 +108,8 @@ public class QuestionGeneratorTest {
         Question q = gen.createQuestionFromType(Question.Type.SentWhom);
         SentWhomQuestion fwq = (SentWhomQuestion) q;
 
-        System.out.println("Q:" + fwq.getQuestion());
-        System.out.println("A:" + fwq.getAnswer());
-        for (String fake : fwq.getFakeAnswers()) {
-            System.out.println("A:" + fake);
-        }
         Assert.assertNotNull(fwq);
+        testQuestion( q );
     }
 
 
@@ -121,12 +118,8 @@ public class QuestionGeneratorTest {
         Question q = gen.createQuestionFromType(Question.Type.SentSubject);
         SentSubjectQuestion fwq = (SentSubjectQuestion) q;
 
-        System.out.println("Q:" + fwq.getQuestion());
-        System.out.println("A:" + fwq.getAnswer());
-        for (String fake : fwq.getFakeAnswers()) {
-            System.out.println("A:" + fake);
-        }
         Assert.assertNotNull(fwq);
+        testQuestion( q );
     }
 
     @Test

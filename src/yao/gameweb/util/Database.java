@@ -62,6 +62,7 @@ public class Database {
                         "questionId INTEGER PRIMARY KEY," +
                         "questionType TEXT," +
                         "questionText TEXT," +
+                        "noneOfTheAboveType TEXT,"+
                         "correctAnswerId INTEGER," +
                         "FOREIGN KEY(correctAnswerId) REFERENCES answers(answerId)"+
                     ");");
@@ -99,11 +100,12 @@ public class Database {
         try {
 //            mConn.setAutoCommit(false); // this will be one big transaction
             // first, insert the question itself
-            PreparedStatement prep = mConn.prepareStatement( "INSERT INTO questions values (?, ?, ?, ?);");
+            PreparedStatement prep = mConn.prepareStatement( "INSERT INTO questions values (?, ?, ?, ?, ?);");
             prep.setNull(1, java.sql.Types.INTEGER); // id
             prep.setString(2, question.getType().toString()); // question type
             prep.setString(3, question.getQuestion()); // question text
-            prep.setNull(4, java.sql.Types.INTEGER); // null out the index of the correct answer
+            prep.setString(4, question.getNoneOfTheAbove().toString() ); // none of the above type
+            prep.setNull(5, java.sql.Types.INTEGER); // null out the index of the correct answer
             prep.executeUpdate();
             ResultSet rs = prep.getGeneratedKeys();
             rs.next();
@@ -213,6 +215,7 @@ public class Database {
         int id = rs.getInt("questionId");
         String question_text = rs.getString("questionText");
         Question.Type type = Question.Type.valueOf(rs.getString("questionType"));
+        Question.NoneAboveType noneAboveType = Question.NoneAboveType.valueOf( rs.getString("noneOfTheAboveType") );
         int realAnswer_id = rs.getInt("correctAnswerId");
         String answer_text = "";
 
@@ -232,7 +235,7 @@ public class Database {
         }
         AnswerStub[] fakeAnswers = new AnswerStub[list.size()];
         list.toArray(fakeAnswers);
-        q = new StoredQuestion(id, question_text, answer_text, realAnswer_id, fakeAnswers, type);
+        q = new StoredQuestion(id, question_text, answer_text, realAnswer_id, fakeAnswers, type, noneAboveType);
         q.setId(id);
         return q;
     }

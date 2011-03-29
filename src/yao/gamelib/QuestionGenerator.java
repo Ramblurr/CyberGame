@@ -14,20 +14,21 @@ import java.util.Random;
  *
  */
 public class QuestionGenerator {
-    private final int NUM_FAKE_ANSWERS = 4;
+    public final static int NUM_FAKE_ANSWERS = 4;
+    public final static String  NONE_TEXT = "None of the above";
     private final Map<Question.Type, QuestionFactory> mMap = new HashMap<Question.Type, QuestionFactory>();
-    
+
     public void registerType(Question.Type quesType, QuestionFactory factory) {
         mMap.put(quesType, factory);
     }
-    
+
     public int getRegisteredTypesCount() {
         return mMap.size();
     }
 
     public QuestionGenerator() {
     }
-    
+
     /**
      * Creates a random type of question.
      * @return a question of random type
@@ -36,12 +37,12 @@ public class QuestionGenerator {
         Random generator = new Random();
         Object[] values = mMap.values().toArray();
         QuestionFactory randomFactory = (QuestionFactory) values[generator.nextInt(values.length)];
-        
+
         if( randomFactory != null)
             return randomFactory.makeQuestion();
         return null;
     }
-    
+
     /**
      * Creates a question of a certain type
      * @param type the type of question to be generated
@@ -49,7 +50,7 @@ public class QuestionGenerator {
      */
     public Question createQuestionFromType(Question.Type type) {
         QuestionFactory factory = mMap.get(type);
-        
+
         if( factory != null ){
             return factory.makeQuestion();
         }
@@ -58,12 +59,12 @@ public class QuestionGenerator {
 
     /**
      * Generates a given number of questions with an even split among all the registered types. Sometimes the requested number of questions cannot be generated, due to there not being enough data, so the size of the returned array might be smaller than the requested size.
-     * 
+     *
      * @param total the total number of questions to generate
      * @return a shuffled array of questions
      */
     public Question[] createQuestionsEven(int total) {
-        if( total <= 0 ) 
+        if( total <= 0 )
             return null;
         ArrayList<Question> questions = new ArrayList<Question>();
 
@@ -74,7 +75,7 @@ public class QuestionGenerator {
 
         Collection<QuestionFactory> values = mMap.values();
         Iterator<QuestionFactory> it = values.iterator();
-        
+
         while (it.hasNext() && questions.size() < total) {
             QuestionFactory factory = it.next();
             Question question = null;
@@ -84,9 +85,25 @@ public class QuestionGenerator {
                 int num_curr_type = 0;
                 while (curr_iteration < iteration_limit && num_curr_type <= questions_per_type) {
                     question = factory.makeQuestion();
-                    if (question != null && question.getFakeAnswers().length == NUM_FAKE_ANSWERS) {
-                        questions.add(question);
-                        ++num_curr_type;
+                    if (question != null ) {
+                        if( question.getNoneOfTheAbove() == Question.NoneAboveType.WithoutRealAnswer ) {
+                            if( question.getFakeAnswers().length == NUM_FAKE_ANSWERS + 1 )  {
+                                // this is a special case: 4 fake answers, 1 none of the above
+                                questions.add(question);
+                                ++num_curr_type;
+                            }
+                        } else if( question.getNoneOfTheAbove() == Question.NoneAboveType.WithRealAnswer ) {
+                            // this is a special case: 3 fake answers, 1 none of the above, 1 real
+                            if ( question.getFakeAnswers().length == NUM_FAKE_ANSWERS) {
+                                questions.add(question);
+                                ++num_curr_type;
+                            }
+                        } else if ( question.getFakeAnswers().length == NUM_FAKE_ANSWERS) {
+                            // normal, no "none of the above"
+                            questions.add(question);
+                            ++num_curr_type;
+                        }
+
                     }
                     ++curr_iteration;
                 }
