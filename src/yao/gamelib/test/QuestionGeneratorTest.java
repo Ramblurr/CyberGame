@@ -45,12 +45,12 @@ public class QuestionGeneratorTest {
         gen.registerType(Question.Type.SentWhen, new SentWhenFactory(store, sent, inbox));
         gen.registerType(Question.Type.SentWhom, new SentWhomFactory(store, sent, inbox));
     }
-    
+
     @Test
     public void testFromWhenQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.FromWhen);
         FromWhenQuestion fwq = (FromWhenQuestion) q;
-        
+
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
         for ( String fake : fwq.getFakeAnswers() ) {
@@ -58,13 +58,13 @@ public class QuestionGeneratorTest {
         }
         Assert.assertNotNull(fwq);
     }
-    
+
 
     @Test
     public void testFromWhomQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.FromWhom);
         FromWhomQuestion fwq = (FromWhomQuestion) q;
-        
+
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
         for ( String fake : fwq.getFakeAnswers() ) {
@@ -72,13 +72,13 @@ public class QuestionGeneratorTest {
         }
         Assert.assertNotNull(fwq);
     }
-    
+
 
     @Test
     public void testFromSubjectQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.FromSubject);
         FromSubjectQuestion fwq = (FromSubjectQuestion) q;
-        
+
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
         for ( String fake : fwq.getFakeAnswers() ) {
@@ -86,13 +86,13 @@ public class QuestionGeneratorTest {
         }
         Assert.assertNotNull(fwq);
     }
-    
+
 
     @Test
     public void testSentWhenQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentWhen);
         SentWhenQuestion fwq = (SentWhenQuestion) q;
-        
+
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
         for (String fake : fwq.getFakeAnswers()) {
@@ -100,13 +100,13 @@ public class QuestionGeneratorTest {
         }
         Assert.assertNotNull(fwq);
     }
-    
+
 
     @Test
     public void testSentWhomQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentWhom);
         SentWhomQuestion fwq = (SentWhomQuestion) q;
-        
+
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
         for (String fake : fwq.getFakeAnswers()) {
@@ -114,13 +114,13 @@ public class QuestionGeneratorTest {
         }
         Assert.assertNotNull(fwq);
     }
-    
+
 
     @Test
     public void testSentSubjectQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentSubject);
         SentSubjectQuestion fwq = (SentSubjectQuestion) q;
-        
+
         System.out.println("Q:" + fwq.getQuestion());
         System.out.println("A:" + fwq.getAnswer());
         for (String fake : fwq.getFakeAnswers()) {

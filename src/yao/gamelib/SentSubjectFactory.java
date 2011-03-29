@@ -12,16 +12,15 @@ public class SentSubjectFactory extends EmailQuestionFactory {
     @Override
     public Question makeQuestion() {
         SentSubjectQuestion q = new SentSubjectQuestion();
-        
+
         return setEmailDataSent(q);
     }
 
     @Override
     public String makeFakeAnswer( Message m ) throws MessagingException {
         String subj = m.getSubject();
-        subj = subj.trim();
-        if ( subj.length() == 0 )
+        if ( subj == null || subj.trim().length() == 0 )
             subj = "<no subject>";
-        return subj;
+        return subj.trim();
     }
 }
