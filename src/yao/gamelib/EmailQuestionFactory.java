@@ -61,7 +61,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         try {
             Message m = mStore.getNewMessageInbox();
 
-            q = setEmailData(m, q);
+            q = setEmailDataReceived(m, q);
             q.setFakeAnswers(cleanAnswers(q, makeFakeAnswers(m, getRandomRange(m, mInbox))));
             return q;
         } catch (MessagingException e) {
@@ -77,7 +77,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             if (m == null)
                 return null;
 
-            q = setEmailData(m, q);
+            q = setEmailDataSent(m, q);
             q.setFakeAnswers(cleanAnswers(q, makeFakeAnswers(m, getRandomRange(m, mSent))));
             return q;
 
@@ -86,8 +86,8 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             return null;
         }
     }
-    
-    private EmailQuestion setEmailData( Message m, EmailQuestion q ) {
+
+    private EmailQuestion setEmailDataReceived( Message m, EmailQuestion q ) {
         try {
             q.setSubject(m.getSubject());
             q.setSender( m.getFrom()[0].toString() ); // TODO this only gets one sender, should we look at all the senders?
@@ -95,7 +95,19 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        return q; 
+        return q;
+    }
+
+    private EmailQuestion setEmailDataSent( Message m, EmailQuestion q ) {
+        try {
+            q.setSubject(m.getSubject());
+            System.out.println();
+            q.setSender( m.getRecipients( RecipientType.TO )[0].toString() ); // TODO this only gets one sender, should we look at all the senders?
+            q.setDate(m.getSentDate().toString());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        return q;
     }
 
     private Message[] getRandomRange(Message m, String folder) throws MessagingException {

@@ -1,12 +1,13 @@
 package yao.gamelib;
 
 import javax.mail.Message;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 public class SentWhomFactory extends EmailQuestionFactory {
-    
+
     public SentWhomFactory(EmailStore store, String sent_folder, String inbox_folder) {
         super(store, sent_folder, inbox_folder);
     }
@@ -14,13 +15,13 @@ public class SentWhomFactory extends EmailQuestionFactory {
     @Override
     public Question makeQuestion() {
         SentWhomQuestion q = new SentWhomQuestion();
-        
+
         return setEmailDataSent(q);
     }
 
     @Override
     public String makeFakeAnswer( Message m ) throws MessagingException {
-        return m.getFrom()[0].toString();
+        return m.getRecipients( RecipientType.TO )[0].toString();
     }
 
     @Override
