@@ -66,3 +66,10 @@ div#header h1 {
 
     border-color:#d09e6d;
 }
+
+.incorrect {
+	background-color: #FF335C;
+}
+.correct {
+	background-color: #33FF66;
+}

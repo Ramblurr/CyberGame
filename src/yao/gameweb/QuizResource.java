@@ -2,9 +2,11 @@ package yao.gameweb;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.restlet.data.CharacterSet;
@@ -14,7 +16,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
@@ -56,9 +57,11 @@ public class QuizResource extends GameResource {
                 stub.id = q.getAnswerId();
                 stub.text = q.getAnswer();
                 answerStubs.add(stub);
+                Collections.shuffle(answerStubs, new Random());
                 qstub.answers = answerStubs;
                 questionStubs.add(qstub);
             }
+            Collections.shuffle(questionStubs, new Random());
             pageData.put("username", username);
             pageData.put("questions", questionStubs);
 
@@ -75,32 +78,70 @@ public class QuizResource extends GameResource {
     }
 
     @Post
-    public void acceptItem(Representation entity) {
-        System.out.println("WTF HAI");
-        Representation result = null;
-        Representation rep = null;
+    public Representation acceptItem(Representation entity) {
+        try {
+            Map<String, Object> pageData = new HashMap<String, Object>();
+            String username = verifySession();
+            if (username == null)
+                return null;
 
-//        Map<String, Object> pageData = new HashMap<String, Object>();
-        String username = verifySession();
-        if (username == null)
-            return;
+            Form form = new Form(entity);
+            String resp_text = "";
+            String resp_debug = "";
+            ArrayList<QuestionStub> questionStubs = new ArrayList<QuestionStub>();
+            for(String name : form.getNames() ) {
+                resp_debug += name + "\n";
+                if(name.startsWith( "question_" )) {
+                    String id_str = form.getFirstValue( name );
 
-        Form form = new Form(entity);
-        String resp_text = "";
-        String resp_debug = "";
-        for(String name : form.getNames() ) {
-            resp_debug += name + "\n";
-            if(name.startsWith( "question_" )) {
-                String id_str = form.getFirstValue( name );
-                int qid = Integer.parseInt( id_str );
-                String answer = form.getFirstValue( "questions_"+qid );
-                resp_text += "For " + qid + " answer: " + answer + "\n";
+                    int qid = Integer.parseInt( id_str );
+                    StoredQuestion q = Database.getInstance().retrieveQuestion( qid );
+
+                    String answer = form.getFirstValue( "questions_"+qid );
+                    int aid = Integer.parseInt( answer );
+
+                    QuestionStub qstub = new QuestionStub();
+                    qstub.text = q.getQuestion();
+                    qstub.id = q.getId();
+                    ArrayList<AnswerStub> answerStubs = new ArrayList<AnswerStub>();
+                    for (AnswerStub stub : q.getFakeAnswerStubs()) {
+                        if( stub.id == aid ) {
+                            // it is the answer the player chose
+                            stub.correct = (aid == q.getAnswerId() ? 1 : -1);
+                        }
+                        answerStubs.add(stub);
+                    }
+                    AnswerStub stub = new AnswerStub();
+                    stub.id = q.getAnswerId();
+                    stub.text = q.getAnswer();
+                    if( stub.id == aid ) {
+                        // it is the answer the player chose
+                        stub.correct = (aid == q.getAnswerId() ? 1 : -1);
+                    }
+                    answerStubs.add(stub);
+                    qstub.answers = answerStubs;
+                    questionStubs.add(qstub);
+
+                    resp_text += "For " + qid + " answer: " + answer + "\n";
+                }
             }
+            System.out.println(resp_text);
+            System.out.println(resp_debug);
+
+            pageData.put("username", username);
+            pageData.put("questions", questionStubs);
+
+            Template thtml = TemplateUtil.getInstance().getTemplate("quiz-answers.ftl");
+            TemplateRepresentation rep = new TemplateRepresentation(thtml, pageData, MediaType.TEXT_HTML);
+            rep.setCharacterSet(CharacterSet.UTF_8);
+
+            setStatus(Status.SUCCESS_CREATED);
+            return rep;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        setStatus(Status.SUCCESS_CREATED);
-        rep = new StringRepresentation(resp_text + "\n\n\n" + resp_debug,
-                MediaType.TEXT_PLAIN);
-        result = rep;
+        return null;
     }
 
 }
