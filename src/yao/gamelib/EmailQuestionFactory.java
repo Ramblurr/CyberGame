@@ -56,6 +56,25 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         return answer1.toLowerCase().equals(answer2.toLowerCase());
     }
 
+    /**
+     * Return the minimum time (in minutes) between this question and possible fake answers.
+     *
+     * Some types of email questions, especially those whose answer involve a date/time, might
+     * wish to adjust the spacing between the actual answer and the fake answers.
+     *
+     * Example:
+     * Question: When did Joe send you the email with subject "foo"?
+     * If all the possible choices (including the actual answer) are within several hours or days
+     * of each other, the user's memory might not be that fine grained.
+     *
+     * The default is 0, because other questions want no spacing.
+     *
+     * @return time buffer in minutes
+     */
+    protected int getMinimumMinutesBuffer() {
+        return 0;
+    }
+
     protected EmailQuestion setEmailDataInbox(EmailQuestion q) {
         try {
             Message m = mStore.getNewMessageInbox();

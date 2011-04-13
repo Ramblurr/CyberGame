@@ -12,12 +12,18 @@ public class SentWhenFactory extends EmailQuestionFactory {
     @Override
     public Question makeQuestion() {
         SentWhenQuestion q = new SentWhenQuestion();
-        
+
         return setEmailDataSent(q);
     }
 
     @Override
     public String makeFakeAnswer( Message m ) throws MessagingException {
         return m.getSentDate().toString();
+    }
+
+    @Override
+    protected int getMinimumMinutesBuffer()
+    {
+        return 1440; // 1 day = 1440 minutes
     }
 }

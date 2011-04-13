@@ -25,4 +25,10 @@ public class FromWhenFactory extends EmailQuestionFactory {
         return m.getSentDate().toString();
     }
 
+    @Override
+    protected int getMinimumMinutesBuffer()
+    {
+        return 1440; // 1 day = 1440 minutes
+    }
+
 }
