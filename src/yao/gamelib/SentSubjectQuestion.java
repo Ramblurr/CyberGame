@@ -1,14 +1,16 @@
 package yao.gamelib;
 
+import java.util.Date;
+
 
 public class SentSubjectQuestion extends EmailQuestion {
 
     private String mQuestionFormat = "What was the subject of the email you sent to '%s' on '%s'";
-    
+
     public SentSubjectQuestion() {
-        
+
     }
-    public SentSubjectQuestion(String sender, String subject, String date, int id)
+    public SentSubjectQuestion(String sender, String subject, Date date, int id)
     {
         mSender = sender;
         mSubject = subject;
@@ -16,14 +18,19 @@ public class SentSubjectQuestion extends EmailQuestion {
         mId = id;
     }
 
+    @Override
     public String getQuestion() {
         return String.format(mQuestionFormat, mSender, mDate);
     }
-    
+
+    @Override
     public String getAnswer() {
+        if( mSubject == null )
+            return "<no subject>";
         return mSubject;
     }
 
+    @Override
     public Type getType() {
         return Type.SentSubject;
     }
