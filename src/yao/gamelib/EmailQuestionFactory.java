@@ -53,7 +53,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
      * @return whether the two answers are the same
      */
     protected boolean isDuplicate(String answer1, String answer2) {
-        return answer1.equals(answer2);
+        return answer1.toLowerCase().equals(answer2.toLowerCase());
     }
 
     protected EmailQuestion setEmailDataInbox(EmailQuestion q) {
