@@ -53,14 +53,15 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
      * @return whether the two answers are the same
      */
     protected boolean isDuplicate(String answer1, String answer2) {
-        return answer1.toLowerCase().equals(answer2.toLowerCase());
+        return answer1.trim().toLowerCase().equals(answer2.trim().toLowerCase());
     }
 
     /**
-     * Return the minimum time (in minutes) between this question and possible fake answers.
+     * Return the minimum time (in days) between this question and possible fake answers.
      *
      * Some types of email questions, especially those whose answer involve a date/time, might
-     * wish to adjust the spacing between the actual answer and the fake answers.
+     * wish to adjust the spacing between the actual answer and the fake answers depending on how
+     * long ago the email was sent.
      *
      * Example:
      * Question: When did Joe send you the email with subject "foo"?
@@ -69,9 +70,9 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
      *
      * The default is 0, because other questions want no spacing.
      *
-     * @return time buffer in minutes
+     * @return time buffer in days
      */
-    protected int getMinimumMinutesBuffer() {
+    protected int getMinimumDaysBuffer() {
         return 0;
     }
 
@@ -111,7 +112,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         try {
             q.setSubject(m.getSubject());
             q.setSender( m.getFrom()[0].toString() ); // TODO this only gets one sender, should we look at all the senders?
-            q.setDate(m.getSentDate().toString());
+            q.setDate(m.getSentDate());
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -122,7 +123,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         try {
             q.setSubject(m.getSubject());
             q.setSender( m.getRecipients( RecipientType.TO )[0].toString() ); // TODO this only gets one sender, should we look at all the senders?
-            q.setDate(m.getSentDate().toString());
+            q.setDate(m.getSentDate());
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -132,8 +133,8 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
     private Message[] getRandomRange(Message m, String folder) throws MessagingException {
         // first, generate the range
         // from 1 to max_range_days
-        final int max_range_days = 30; // the range will not be greater than 30
-        final int min_range_days = 5; // the range will be at least 5
+        final int max_range_days = 120; // the range will not be greater than this
+        final int min_range_days = 10; // the range will be at least this
         Random randGen = new Random();
         int range_days = 0;
         do {
@@ -230,8 +231,13 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         // randomly pick messages in the range to be fake answers
         int found = answers.size(), index = 0;
         while (found < total_number_answers && index < list.size()) {
-            Message ans_m = msgs[list.get( index )];
-            String ans_text = makeFakeAnswer(ans_m).trim();
+            Message ans_m = msgs[list.get( index++ )];
+            String ans_text = makeFakeAnswer(ans_m);
+            if( ans_text == null )
+                continue;
+            ans_text = ans_text.trim();
+            if( ans_text.length() == 0 )
+                continue;
             // check for duplicate answers
             boolean duplicate = false;
             for (String a : answers) {
@@ -243,7 +249,6 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
                 answers.add( ans_text );
                 ++found;
             }
-            ++index;
         }
         System.out.println(answers.size() + " total");
         String[] answersArr = new String[answers.size()];

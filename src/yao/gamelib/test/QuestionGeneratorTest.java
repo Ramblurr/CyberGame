@@ -73,7 +73,7 @@ public class QuestionGeneratorTest {
     }
 
 
-    @Test
+//    @Test
     public void testFromWhomQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.FromWhom);
         FromWhomQuestion fwq = (FromWhomQuestion) q;
@@ -83,7 +83,7 @@ public class QuestionGeneratorTest {
     }
 
 
-    @Test
+//    @Test
     public void testFromSubjectQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.FromSubject);
         FromSubjectQuestion fwq = (FromSubjectQuestion) q;
@@ -103,7 +103,7 @@ public class QuestionGeneratorTest {
     }
 
 
-    @Test
+//    @Test
     public void testSentWhomQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentWhom);
         SentWhomQuestion fwq = (SentWhomQuestion) q;
@@ -113,7 +113,7 @@ public class QuestionGeneratorTest {
     }
 
 
-    @Test
+//    @Test
     public void testSentSubjectQuestion() {
         Question q = gen.createQuestionFromType(Question.Type.SentSubject);
         SentSubjectQuestion fwq = (SentSubjectQuestion) q;
@@ -122,7 +122,7 @@ public class QuestionGeneratorTest {
         testQuestion( q );
     }
 
-    @Test
+//    @Test
     public void emailEquality() throws AddressException {
         InternetAddress e1 = new InternetAddress("dude@dude.com");
         InternetAddress e2 = new InternetAddress("DUDE@dude.com");

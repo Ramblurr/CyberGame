@@ -1,15 +1,16 @@
 package yao.gamelib;
 
-import yao.gamelib.Question.Type;
+import java.util.Date;
+
 
 public class FromSubjectQuestion extends EmailQuestion {
     private String mQuestionFormat = "What is the subject of the email from '%s' on '%s'";
-    
+
     public FromSubjectQuestion()
     {
     }
-    
-    public FromSubjectQuestion(String sender, String subject, String date, int id)
+
+    public FromSubjectQuestion(String sender, String subject, Date date, int id)
     {
         mSender = sender;
         mSubject = subject;
