@@ -105,6 +105,8 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         }
     }
 
+//////// BEGIN PRIVATE METHODS //////////////
+
     private EmailQuestion setEmailDataReceived( Message m, EmailQuestion q ) {
         try {
             q.setSubject(m.getSubject());
@@ -229,7 +231,6 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         int found = answers.size(), index = 0;
         while (found < total_number_answers && index < list.size()) {
             Message ans_m = msgs[list.get( index )];
-            Date ans_date = ans_m.getSentDate();
             String ans_text = makeFakeAnswer(ans_m).trim();
             // check for duplicate answers
             boolean duplicate = false;
