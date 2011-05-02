@@ -145,11 +145,11 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             range_days = randGen.nextInt( max_range_days );
         } while (range_days <= min_range_days);
 
-                System.out.println( "Using date range " + range_days );
+//                System.out.println( "Using date range " + range_days );
         // where in the range will the actual answer fall?
         int date_position = randGen.nextInt( range_days );
 
-                System.out.println( "Using date position " + date_position );
+//                System.out.println( "Using date position " + date_position );
         // calculate the range in days
         int days_after_date = range_days - date_position;
         int days_before_date = date_position;
@@ -167,8 +167,8 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         c.add( Calendar.DATE, days_after_date );
         Date end_range = c.getTime();
 
-                System.out.println( "Using date range " + begin_range.toString()
-                        + " to " + end_range.toString() );
+//        System.out.println( "Using date range " + begin_range.toString()
+//                        + " to " + end_range.toString() );
 
         // get all messages within the range
         Message[] msgs = mStore.getMessageInRange(folder, begin_range,
