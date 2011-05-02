@@ -5,25 +5,22 @@ Cyber Game
 Development Setup
 -----------------
 
+**Libraries**
+
 This project has several dependencies, but they are all included in the source tree.
 
 Here is a listing of the project dependencies:
 
-**[Restlet](http://www.restlet.org/)**
+* [Restlet](http://www.restlet.org/) -  Is an easy to use web framework. It powers the web service. It is similar to Java Servlets, but much simpler. Basically, you define 'routes' which are URI paths to a resource (e.g., '/questions'). A resources is just any content accessible by a URL. Once you define a route to a resource, you define a Resource class, which is a handler. When a visitor comes to a certain route, Restlet looks up the handler and executes that code. So, it is a simple system for defining URLs and having chunks of code handle those URLs.
 
-Is an easy to use web framework. It powers the web service. It is similar to Java Servlets, but much simpler. Basically, you define 'routes' which are URI paths to a resource (e.g., '/questions'). A resources is just any content accessible by a URL. Once you define a route to a resource, you define a Resource class, which is a handler. When a visitor comes to a certain route, Restlet looks up the handler and executes that code. So, it is a simple system for defining URLs and having chunks of code handle those URLs.
+* [JavaMaildir](http://javamaildir.sourceforge.net/) - [MailDir](http://en.wikipedia.org/wiki/Maildir) is a very common format for storing email messages on disk. JavaMailDir is an implementation of this format for JavaMail. We use JavaMail to download a user's email, and JavaMailDir to store that email to disk. We also use JavaMailDir to read that email again later for processing.
 
-**[JavaMaildir](http://javamaildir.sourceforge.net/)**
+* [SqliteJDBC](http://www.zentus.com/sqlitejdbc/) - SQLiteJDBC is a Java JDBC driver for SQLite. SQLite is a self-contained, serverless SQL database that is stored in a file. Using it for development is simpler than using a large database like MySQL. Though, it should be easy to switch from SQLite to a more robust database later on in the process.
 
-[MailDir](http://en.wikipedia.org/wiki/Maildir) is a very common format for storing email messages on disk. JavaMailDir is an implementation of this format for JavaMail. We use JavaMail to download a user's email, and JavaMailDir to store that email to disk. We also use JavaMailDir to read that email again later for processing.
+* [Joda Time](http://joda-time.sourceforge.net/) - Joda Time is a library for handling dates and times. It is used in the question generation process.
 
-**[SqliteJDBC](http://www.zentus.com/sqlitejdbc/)**
 
-SQLiteJDBC is a Java JDBC driver for SQLite. SQLite is a self-contained, serverless SQL database that is stored in a file. Using it for development is simpler than using a large database like MySQL. Though, it should be easy to switch from SQLite to a more robust database later on in the process.
-
-**[Joda Time](http://joda-time.sourceforge.net/)**
-
-Joda Time is a library for handling dates and times. It is used in the question generation process.
+**Setup**
 
 The following instructions are for those using Eclipse. They explain how to setup your Eclipse environment to recognize all the dependencies. 
 
@@ -62,12 +59,12 @@ The following instructions are for those using Eclipse. They explain how to setu
     * Finish
     * Select the new Target (Restlet) and click "Apply"
 
-4. **Add the Remaining Libraries to the Build Path **
+4. **Add the Remaining Libraries to the Build Path**
 
     * With the CyberGame project open, select: Project > Properties in the menu
     * On the left side choose 'Java Build Path'
     * Click 'Add Jars' on the right side
-    * Using the tree browser expand the 'CyberGame/lib' directory
+    * Using the tree browser expand the `CyberGame/lib` directory
     * Highlight all the *.jar files and click OK
     * Click "Add Library"
     * Choose JUnit
