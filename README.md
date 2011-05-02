@@ -106,4 +106,4 @@ One thing to note is the templating system.
 
 Rather than embed HTML within Java code (that would get messy quick), we are using the [Freemarker template engine](http://freemarker.sourceforge.net/). The templates are stored in `gameweb/util/templates/` as `.ftl` files. They allow us to embed little snippets of code into an HTML page, and then process those templates in our Java code and output a fuly featured page. Freemarker is included in the Restlet library.
 
-Database browser: (SQLite Database Browser](http://sqlitebrowser.sourceforge.net/)
+Database browser: [SQLite Database Browser](http://sqlitebrowser.sourceforge.net/)
