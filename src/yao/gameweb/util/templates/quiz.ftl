@@ -1,7 +1,9 @@
 <#include "header.ftl">
 <div class="grid_9">
 <p>Hello ${username}! Please answer the questions below.</p>
-
+</div>
+<div class="clear"></div>
+<div class="grid_8">
 <form action="/quiz/answer" method="post">
         <div class="form-item">
             <#list questions as question >
@@ -23,6 +25,9 @@
         <div class="form-item submit-wrap"><input type="submit" id="submit" class="button" value="Submit" /></div>
 </form>
 
+</div>
+<div lass="grid_4">
+Hello
 </div>
 <#include "footer.ftl">
 <div class="clear"></div>

@@ -5,6 +5,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import yao.gamelib.FromSubjectQuestion;
@@ -25,7 +26,7 @@ public class DatabaseTest {
         FromSubjectQuestion q = new FromSubjectQuestion();
 
         String sender = "Joe Bob";
-        String date = "2011/02/15";
+        DateTime date = new DateTime(2011, 02, 15, 0, 0, 0, 0);
         String subject = "Secret Plans";
         Question.NoneAboveType noneAboveType = Question.NoneAboveType.WithRealAnswer;
         q.setSender(sender);
