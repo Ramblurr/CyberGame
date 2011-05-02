@@ -70,3 +70,38 @@ The following instructions are for those using Eclipse. They explain how to setu
     * Choose JUnit
         * -> Next -> Choose JUnit library version 4 -> Finish
     * Your Build Path should look like this: [http://i.imgur.com/Zyp8l.png](http://i.imgur.com/Zyp8l.png)
+
+
+Cyber Game Modules
+------------------
+
+This project consists of three separate modules all contained in the `src/yao` directory.
+
+**`gamelib`** - Game Library
+
+This module includes the source code for:
+
+* fetching datasets
+    * currently implemented: email fetching
+        * `src/yao/gamelib/FetchDataset.java`
+* abstract question generation
+    * `src/yao/gamelib/QuestionGenerator.java`
+* implementations of various types of questions
+    * currently implemented: email
+        * see `src/yao/gamelib/EmailQuestion.java` and sub-classes
+
+**`gamecli`** - Game Command Line Interface
+
+This is a standalone program that interface with the `gamelib` via the command line. Currently it implements the following features:
+
+* input user credentials to download *and store* email data
+* from the downloaded email data, generate questions
+* store generated questions in a database
+
+**`gameweb`** - Game Web Module
+
+This module contains all the code relating to the web service and interface. The javadocs should be self-explanatory.
+
+One thing to note is the templating system.
+
+Rather than embed HTML within Java code (that would get messy quick), we are using the [Freemarker template engine](http://freemarker.sourceforge.net/). The templates are stored in `gameweb/util/templates/` as `.ftl` files. They allow us to embed little snippets of code into an HTML page, and then process those templates in our Java code and output a fuly featured page. Freemarker is included in the Restlet library.
