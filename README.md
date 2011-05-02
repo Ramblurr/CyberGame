@@ -77,7 +77,7 @@ Cyber Game Modules
 
 This project consists of three separate modules all contained in the `src/yao` directory.
 
-**`gamelib`** - Game Library
+**gamelib - Game Library**
 
 This module includes the source code for:
 
@@ -90,7 +90,7 @@ This module includes the source code for:
     * currently implemented: email
         * see `src/yao/gamelib/EmailQuestion.java` and sub-classes
 
-**`gamecli`** - Game Command Line Interface
+**gamecli - Game Command Line Interface**
 
 This is a standalone program that interface with the `gamelib` via the command line. Currently it implements the following features:
 
@@ -98,10 +98,12 @@ This is a standalone program that interface with the `gamelib` via the command l
 * from the downloaded email data, generate questions
 * store generated questions in a database
 
-**`gameweb`** - Game Web Module
+**gameweb - Game Web Module**
 
 This module contains all the code relating to the web service and interface. The javadocs should be self-explanatory.
 
 One thing to note is the templating system.
 
 Rather than embed HTML within Java code (that would get messy quick), we are using the [Freemarker template engine](http://freemarker.sourceforge.net/). The templates are stored in `gameweb/util/templates/` as `.ftl` files. They allow us to embed little snippets of code into an HTML page, and then process those templates in our Java code and output a fuly featured page. Freemarker is included in the Restlet library.
+
+Database browser: (SQLite Database Browser](http://sqlitebrowser.sourceforge.net/)
