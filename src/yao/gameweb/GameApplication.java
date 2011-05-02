@@ -25,9 +25,6 @@ public class GameApplication extends Application {
         router.attach("/res", new Directory(getContext(), ROOT_URI) );
         router.attach("/", RootResource.class);
 
-//        router.attach("/race/{race_id}", RaceResource.class);
-//        router.attach("/race/{race_id}/runner", RaceRunnersResource.class);
-//        router.attach("/race/{race_id}/runner/{runner_id}", RaceRunnerResource.class);
         return router;
        }
 
