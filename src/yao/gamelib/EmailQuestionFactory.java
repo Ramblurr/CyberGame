@@ -1,6 +1,7 @@
 package yao.gamelib;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -9,6 +10,8 @@ import java.util.Random;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+
+import org.joda.time.DateTime;
 
 public abstract class EmailQuestionFactory implements QuestionFactory {
     protected EmailStore mStore;
@@ -53,6 +56,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
      * @return whether the two answers are the same
      */
     protected boolean isDuplicate(String answer1, String answer2) {
+//        System.out.println("isDuplicate: '" + answer1.trim().toLowerCase() +"'   '"+answer2.trim().toLowerCase()+"'");
         return answer1.trim().toLowerCase().equals(answer2.trim().toLowerCase());
     }
 
@@ -112,7 +116,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         try {
             q.setSubject(m.getSubject());
             q.setSender( m.getFrom()[0].toString() ); // TODO this only gets one sender, should we look at all the senders?
-            q.setDate(m.getSentDate());
+            q.setDate(new DateTime(m.getSentDate())); // using JodaTime's DateTime class
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -123,7 +127,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         try {
             q.setSubject(m.getSubject());
             q.setSender( m.getRecipients( RecipientType.TO )[0].toString() ); // TODO this only gets one sender, should we look at all the senders?
-            q.setDate(m.getSentDate());
+            q.setDate(new DateTime(m.getSentDate())); // using JodaTime's DateTime class
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -132,7 +136,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
 
     private Message[] getRandomRange(Message m, String folder) throws MessagingException {
         // first, generate the range
-        // from 1 to max_range_days
+        // from min_range_days to max_range_days
         final int max_range_days = 120; // the range will not be greater than this
         final int min_range_days = 10; // the range will be at least this
         Random randGen = new Random();
@@ -141,11 +145,11 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             range_days = randGen.nextInt( max_range_days );
         } while (range_days <= min_range_days);
 
-        //        System.out.println( "Using date range " + range_days );
+                System.out.println( "Using date range " + range_days );
         // where in the range will the actual answer fall?
         int date_position = randGen.nextInt( range_days );
 
-        //        System.out.println( "Using date position " + date_position );
+                System.out.println( "Using date position " + date_position );
         // calculate the range in days
         int days_after_date = range_days - date_position;
         int days_before_date = date_position;
@@ -163,8 +167,8 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         c.add( Calendar.DATE, days_after_date );
         Date end_range = c.getTime();
 
-        //        System.out.println( "Using date range " + begin_range.toString()
-        //                + " to " + end_range.toString() );
+                System.out.println( "Using date range " + begin_range.toString()
+                        + " to " + end_range.toString() );
 
         // get all messages within the range
         Message[] msgs = mStore.getMessageInRange(folder, begin_range,
@@ -187,6 +191,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
             end_range = c.getTime();
             msgs = mStore.getMessageInRange(folder, begin_range, end_range);
         }
+        Collections.shuffle(Arrays.asList( msgs ), new Random());
         return msgs;
     }
 
@@ -212,11 +217,11 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
         int total_number_answers = QuestionGenerator.NUM_FAKE_ANSWERS; // 4 fake answers, 1 real = 5 total
         if(do_none_above) {
             if( include_real ) {
-                System.out.print("include real - ");
+//                System.out.print("include real - ");
                 q.setNoneOfTheAbove( Question.NoneAboveType.WithRealAnswer );
                 // 3 fake answers, 1 none, 1 real = 5 total
             } else {
-                System.out.print("NO real  - ");
+//                System.out.print("NO real  - ");
                 q.setNoneOfTheAbove( Question.NoneAboveType.WithoutRealAnswer );
                 total_number_answers += 1; // 4 fake, 1 none = 5 total
             }
@@ -250,7 +255,7 @@ public abstract class EmailQuestionFactory implements QuestionFactory {
                 ++found;
             }
         }
-        System.out.println(answers.size() + " total");
+//        System.out.println(answers.size() + " total");
         String[] answersArr = new String[answers.size()];
         answers.toArray( answersArr );
         return answersArr;

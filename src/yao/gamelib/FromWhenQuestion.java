@@ -1,6 +1,6 @@
 package yao.gamelib;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 public class FromWhenQuestion extends EmailQuestion {
     private String mQuestionFormat = "When did you receive the email from '%s' with subject '%s'";
@@ -9,7 +9,7 @@ public class FromWhenQuestion extends EmailQuestion {
     {
     }
 
-    public FromWhenQuestion(String sender, String subject, Date date, int id)
+    public FromWhenQuestion(String sender, String subject, DateTime date, int id)
     {
         mSender = sender;
         mSubject = subject;
@@ -24,7 +24,9 @@ public class FromWhenQuestion extends EmailQuestion {
 
     @Override
     public String getAnswer() {
-        return mDate.toString();
+        DateTime now = new DateTime();
+        DateTime my_date = new DateTime(getDate());
+        return Utils.formatDateAnswer( my_date, now );
     }
 
     @Override

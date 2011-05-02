@@ -1,6 +1,6 @@
 package yao.gamelib;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 public class SentWhenQuestion extends EmailQuestion {
     private String mQuestionFormat = "When did you send the email to '%s' with subject '%s'";
@@ -9,7 +9,7 @@ public class SentWhenQuestion extends EmailQuestion {
     {
     }
 
-    public SentWhenQuestion(String sender, String subject, Date date, int id)
+    public SentWhenQuestion(String sender, String subject, DateTime date, int id)
     {
         mSender = sender;
         mSubject = subject;

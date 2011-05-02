@@ -5,9 +5,6 @@ import javax.mail.MessagingException;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 
 public class SentWhenFactory extends EmailQuestionFactory {
     protected SentWhenQuestion mQuestion;
@@ -33,26 +30,9 @@ public class SentWhenFactory extends EmailQuestionFactory {
         }
 
         DateTime now = new DateTime();
-        Period period = new Period(sent_date, now);
-        PeriodFormatter formatter = new PeriodFormatterBuilder()
-        .printZeroNever()
-        .appendYears().appendSuffix(" year ", " years ")
-        .appendSeparator(" and")
-        .printZeroRarelyFirst()
-        .appendMonths().appendSuffix(" month", " months")
-        .appendSeparator(" ")
-        .appendWeeks().appendSuffix( " week",  " weeks" )
-        .appendSeparator(" ")
-        .appendDays().appendSuffix(" day", " days")
-        .printZeroNever()
-        .toFormatter();
-        String answer = formatter.print( period ) + " ago";
-        System.out.println(d.getDays());
-        // if the answer is more than 14 days ago, append the actual date
-        if( Math.abs( Days.daysBetween(sent_date, now).getDays() ) > 14 ) {
-            answer += " (" + sent_date.toString( "dd MMM YYYY" ) + ")";
-        }
+        String answer = Utils.formatDateAnswer( sent_date, now );
         return answer;
+
     }
 
     @Override

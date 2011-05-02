@@ -1,6 +1,6 @@
 package yao.gamelib;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 public class FromWhomQuestion extends EmailQuestion {
 
@@ -10,7 +10,7 @@ public class FromWhomQuestion extends EmailQuestion {
     {
     }
 
-    public FromWhomQuestion(String sender, String subject, Date date, int id)
+    public FromWhomQuestion(String sender, String subject, DateTime date, int id)
     {
         mSender = sender;
         mSubject = subject;
